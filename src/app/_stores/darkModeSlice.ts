@@ -4,8 +4,21 @@ interface DarkModeState {
   isEnabled: boolean;
 }
 
+// Funzione per leggere il tema dal localStorage
+const getInitialDarkMode = (): boolean => {
+  if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+    const saved = localStorage.getItem('darkMode');
+    if (saved !== null) {
+      return saved === '1';
+    }
+    // Se non c'è un valore salvato, usa la preferenza del sistema
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  return false;
+};
+
 const initialState: DarkModeState = {
-  isEnabled: false,
+  isEnabled: getInitialDarkMode(),
 };
 
 export const styleSlice = createSlice({
@@ -27,10 +40,10 @@ export const styleSlice = createSlice({
         );
       }
 
-      // You can persist dark mode setting
-      // if (typeof localStorage !== 'undefined') {
-      //   localStorage.setItem('darkMode', state.darkMode ? '1' : '0')
-      // }
+      // Persisti la preferenza del tema nel localStorage
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('darkMode', state.isEnabled ? '1' : '0');
+      }
     },
   },
 });
