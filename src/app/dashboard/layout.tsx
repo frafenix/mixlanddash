@@ -25,10 +25,44 @@ function DashboardLayoutContent({ children }: Props) {
   const router = useRouter();
   const [isAsideMobileExpanded, setIsAsideMobileExpanded] = useState(false);
   const [isAsideLgActive, setIsAsideLgActive] = useState(false);
+  const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
 
   useEffect(() => {
     if (user !== undefined && !user) {
       router.push("/login");
+    }
+  }, [user, router]);
+
+  // Check onboarding status when user is loaded
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      if (!user) {
+        setIsCheckingOnboarding(false);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/onboarding');
+        if (response.ok) {
+          const data = await response.json();
+          if (!data.onboardingCompleted) {
+            console.log('🟡 User has not completed onboarding, redirecting...');
+            router.push('/onboarding');
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+        // If there's an error, assume onboarding is needed
+        router.push('/onboarding');
+        return;
+      }
+      
+      setIsCheckingOnboarding(false);
+    };
+
+    if (user) {
+      checkOnboardingStatus();
     }
   }, [user, router]);
 
@@ -37,12 +71,14 @@ function DashboardLayoutContent({ children }: Props) {
     setIsAsideLgActive(false);
   };
 
-  if (!user) {
+  if (!user || isCheckingOnboarding) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-800">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">Verifica autenticazione...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">
+            {!user ? 'Verifica autenticazione...' : 'Controllo configurazione...'}
+          </p>
         </div>
       </div>
     );
