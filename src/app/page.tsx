@@ -31,20 +31,20 @@ function HomePageContent() {
   const darkMode = useAppSelector((state) => state.darkMode.isEnabled);
 
   useEffect(() => {
-    // Only redirect to dashboard if user is paid, not just logged in
-    if (user && user.clientReadOnlyMetadata?.subscriptionStatus === 'paid' && !isProcessingPayment) {
-      router.push("/dashboard");
-      return;
-    }
-
-    // Check if user just registered and has pending purchase
+    // Redirect all authenticated users to dashboard
     if (user && !isProcessingPayment) {
+      // Check if user just registered and has pending purchase
       const pendingPurchase = localStorage.getItem('pendingPurchase');
       if (pendingPurchase === 'starter') {
         console.log('🟡 User registered, starting checkout for pending purchase');
         localStorage.removeItem('pendingPurchase');
         handleStarterPlanClick();
+        return;
       }
+      
+      // Redirect to dashboard for all authenticated users
+      router.push("/dashboard");
+      return;
     }
   }, [user, router, isProcessingPayment]);
 
@@ -106,8 +106,8 @@ function HomePageContent() {
     );
   }
 
-  // Check if user has already paid - only redirect to dashboard if they have a subscription
-  if (user && user.clientReadOnlyMetadata?.subscriptionStatus === 'paid') {
+  // Check if user is authenticated - redirect to dashboard
+  if (user && !isProcessingPayment) {
     router.push("/dashboard");
     return null;
   }
@@ -312,8 +312,8 @@ function HomePageContent() {
               <div className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-blue-500 shadow-lg shadow-blue-500/40">
                 <Icon path={mdiCalendarClock} size="24" className="text-white" />
               </div>
-              <h1 className="text-darken mb-3 text-xl font-medium lg:px-14 text-gray-900 dark:text-white">
-                GESTIONE PRESENZE
+              <h1 className="text-darken mb-3 text-xl font-semibold lg:px-14 text-gray-900 dark:text-white">
+                Gestione Presenze
               </h1>
               <p className="px-4 text-gray-500 dark:text-gray-400">
                 Traccia orari di lavoro, straordinari e pause con facilità. Sistema di timbratura digitale integrato per una gestione completa.
@@ -324,8 +324,8 @@ function HomePageContent() {
               <div className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-blue-600 shadow-lg shadow-blue-600/40">
                 <Icon path={mdiAccountMultiple} size="24" className="text-white" />
               </div>
-              <h1 className="text-darken mb-3 text-xl font-medium lg:px-14 text-gray-900 dark:text-white">
-                GESTIONE DIPENDENTI
+              <h1 className="text-darken mb-3 text-xl font-semibold lg:px-14 text-gray-900 dark:text-white">
+                Gestione Dipendenti
               </h1>
               <p className="px-4 text-gray-500 dark:text-gray-400">
                 Database completo dei dipendenti con documenti, contratti e informazioni personali. Tutto organizzato in un unico posto.
@@ -336,8 +336,8 @@ function HomePageContent() {
               <div className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-blue-700 shadow-lg shadow-blue-700/40">
                 <Icon path={mdiFileDocument} size="24" className="text-white" />
               </div>
-              <h1 className="text-darken mb-3 text-xl font-medium lg:px-14 text-gray-900 dark:text-white">
-                FERIE E PERMESSI
+              <h1 className="text-darken mb-3 text-xl font-semibold lg:px-14 text-gray-900 dark:text-white">
+                Ferie e Permessi
               </h1>
               <p className="px-4 text-gray-500 dark:text-gray-400">
                 Richieste e approvazioni automatizzate. Calendario condiviso per una migliore pianificazione delle assenze aziendali.
@@ -348,8 +348,8 @@ function HomePageContent() {
               <div className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-blue-500 shadow-lg shadow-blue-500/40">
                 <Icon path={mdiChartLine} size="24" className="text-white" />
               </div>
-              <h1 className="text-darken mb-3 text-xl font-medium lg:px-14 text-gray-900 dark:text-white">
-                REPORT E ANALYTICS
+              <h1 className="text-darken mb-3 text-xl font-semibold lg:px-14 text-gray-900 dark:text-white">
+                Report e Analytics
               </h1>
               <p className="px-4 text-gray-500 dark:text-gray-400">
                 Dashboard dettagliate con metriche HR, report personalizzabili e analisi dei dati per decisioni strategiche informate.
@@ -360,8 +360,8 @@ function HomePageContent() {
               <div className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-blue-600 shadow-lg shadow-blue-600/40">
                 <Icon path={mdiCog} size="24" className="text-white" />
               </div>
-              <h1 className="text-darken mb-3 text-xl font-medium lg:px-14 text-gray-900 dark:text-white">
-                AUTOMAZIONE
+              <h1 className="text-darken mb-3 text-xl font-semibold lg:px-14 text-gray-900 dark:text-white">
+                Automazione
               </h1>
               <p className="px-4 text-gray-500 dark:text-gray-400">
                 Workflow automatizzati per onboarding, valutazioni e processi ricorrenti. Risparmia tempo e riduci gli errori manuali.
@@ -372,8 +372,8 @@ function HomePageContent() {
               <div className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-blue-700 shadow-lg shadow-blue-700/40">
                 <Icon path={mdiShield} size="24" className="text-white" />
               </div>
-              <h1 className="text-darken mb-3 text-xl font-medium lg:px-14 text-gray-900 dark:text-white">
-                SICUREZZA E PRIVACY
+              <h1 className="text-darken mb-3 text-xl font-semibold lg:px-14 text-gray-900 dark:text-white">
+                Sicurezza e Privacy
               </h1>
               <p className="px-4 text-gray-500 dark:text-gray-400">
                 Conformità GDPR, crittografia dei dati e controlli di accesso avanzati per la massima protezione aziendale.
