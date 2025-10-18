@@ -3,12 +3,15 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@stackframe/stack";
-import { mdiOfficeBuilding, mdiMapMarker, mdiCheck, mdiRocketLaunch, mdiStar } from "@mdi/js";
+import { mdiOfficeBuilding, mdiMapMarker, mdiCheck, mdiRocketLaunch } from "@mdi/js";
 import SectionMain from "../_components/Section/Main";
-import CardBoxComponentBody from "../_components/CardBox/Component/Body";
-import CardBoxComponentFooter from "../_components/CardBox/Component/Footer";
 import FormField from "../_components/FormField";
 import Icon from "../_components/Icon";
+import CardBox from "../_components/CardBox";
+import SectionTitleLineWithButton from "../_components/Section/TitleLineWithButton";
+import NotificationBar from "../_components/NotificationBar";
+import Button from "../_components/Button";
+import PillTag from "../_components/PillTag";
 
 interface OnboardingData {
   companyName: string;
@@ -107,238 +110,170 @@ function OnboardingContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      {/* Animated background elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl float-slow"></div>
-        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-gradient-to-br from-purple-400/20 to-pink-600/20 rounded-full blur-3xl float-medium"></div>
-      </div>
-
-      <SectionMain>
-        {/* Header with gradient */}
-        <div className="mb-8 text-center slide-up">
-          <div className="inline-flex items-center gap-2 px-4 py-2 glass rounded-full mb-4">
-            <Icon path={mdiStar} size="16" className="text-blue-600 dark:text-blue-400" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {paymentSuccess ? "Benvenuto!" : "Ultimi passi"}
-            </span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-3">
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {paymentSuccess ? "🎉 Pagamento Completato!" : "Configura il tuo Account"}
-            </span>
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Completa questi semplici passaggi per iniziare a utilizzare la piattaforma
-          </p>
-        </div>
+    <SectionMain>
+        <SectionTitleLineWithButton icon={mdiRocketLaunch} title="Configura il tuo Account" main />
+        <p className="text-gray-500 dark:text-slate-400 mb-6 text-center">
+          Completa questi semplici passaggi per iniziare a utilizzare la piattaforma
+        </p>
 
         {paymentSuccess && (
-          <div className="mb-8 slide-up-delay-1">
-            <div className="glass-strong rounded-2xl p-6 border border-green-200 dark:border-green-800/30">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Icon path={mdiCheck} size="24" className="text-white" />
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900 dark:text-white text-lg">Pagamento completato con successo!</p>
-                  <p className="text-gray-600 dark:text-gray-300">Ora completa la configurazione per iniziare.</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <NotificationBar color="success" icon={mdiCheck}>
+            Pagamento completato con successo! Ora completa la configurazione per iniziare.
+          </NotificationBar>
         )}
 
         {/* Progress indicator */}
-        <div className="mb-8 slide-up-delay-1">
-          <div className="flex items-center justify-center gap-2">
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-white font-semibold text-sm">1</span>
-              </div>
-              <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-600"></div>
-            </div>
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-white font-semibold text-sm">2</span>
-              </div>
-              <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-pink-600"></div>
-            </div>
-            <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-red-600 rounded-full flex items-center justify-center shadow-lg">
-              <Icon path={mdiRocketLaunch} size="16" className="text-white" />
-            </div>
-          </div>
+        <div className="mb-6 flex items-center justify-center gap-2">
+          <PillTag color="info" label="Passo 1" icon={mdiOfficeBuilding} />
+          <div className="w-12 h-px bg-gray-200 dark:bg-slate-800" />
+          <PillTag color="light" label="Passo 2" icon={mdiMapMarker} />
+          <div className="w-12 h-px bg-gray-200 dark:bg-slate-800" />
+          <PillTag color="contrast" label="Avvio" icon={mdiRocketLaunch} />
         </div>
 
         <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
           {/* Step 1 Card */}
-          <div className="mb-8 slide-up-delay-2">
-            <div className="glass-strong rounded-3xl shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden hover:shadow-3xl transition-all duration-300">
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                    <Icon path={mdiOfficeBuilding} size="24" className="text-white" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-white/80 text-sm font-medium">Passo 1</span>
-                    </div>
-                    <h2 className="text-2xl font-bold text-white">Informazioni Azienda</h2>
-                  </div>
-                </div>
+          <CardBox className="mb-6 border border-gray-200 dark:border-slate-800" isHoverable>
+            <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100 dark:border-slate-800">
+              <Icon path={mdiOfficeBuilding} size={20} className="text-blue-600" />
+              <div>
+                <p className="text-sm text-gray-500 dark:text-slate-400">Passo 1</p>
+                <h2 className="text-xl font-semibold">Informazioni Azienda</h2>
               </div>
-              <CardBoxComponentBody>
-                <FormField label="Nome Azienda" labelFor="companyName" icon={mdiOfficeBuilding}>
-                  {(fieldData) => (
-                    <input
-                      {...fieldData}
-                      id="companyName"
-                      name="companyName"
-                      type="text"
-                      required
-                      value={formData.companyName}
-                      onChange={handleInputChange}
-                      placeholder="Es. La Mia Pizzeria"
-                    />
-                  )}
-                </FormField>
-
-                <FormField 
-                  label="Descrizione Azienda" 
-                  labelFor="companyDescription" 
-                  help="Breve descrizione della tua attività (opzionale)"
-                  hasTextareaHeight
-                >
-                  {(fieldData) => (
-                    <textarea
-                      {...fieldData}
-                      id="companyDescription"
-                      name="companyDescription"
-                      value={formData.companyDescription}
-                      onChange={handleInputChange}
-                      placeholder="Descrivi brevemente la tua attività..."
-                    />
-                  )}
-                </FormField>
-              </CardBoxComponentBody>
             </div>
-          </div>
+
+            <FormField label="Nome Azienda" labelFor="companyName" icon={mdiOfficeBuilding}>
+              {(fieldData) => (
+                <input
+                  {...fieldData}
+                  id="companyName"
+                  name="companyName"
+                  type="text"
+                  required
+                  value={formData.companyName}
+                  onChange={handleInputChange}
+                  placeholder="Es. La Mia Pizzeria"
+                />
+              )}
+            </FormField>
+
+            <FormField 
+              label="Descrizione Azienda" 
+              labelFor="companyDescription" 
+              help="Breve descrizione della tua attività (opzionale)"
+              hasTextareaHeight
+            >
+              {(fieldData) => (
+                <textarea
+                  {...fieldData}
+                  id="companyDescription"
+                  name="companyDescription"
+                  value={formData.companyDescription}
+                  onChange={handleInputChange}
+                  placeholder="Descrivi brevemente la tua attività..."
+                />
+              )}
+            </FormField>
+          </CardBox>
 
           {/* Step 2 Card */}
-          <div className="mb-8 slide-up-delay-3">
-            <div className="glass-strong rounded-3xl shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden hover:shadow-3xl transition-all duration-300">
-              <div className="bg-gradient-to-r from-purple-500 to-pink-600 p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                    <Icon path={mdiMapMarker} size="24" className="text-white" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-white/80 text-sm font-medium">Passo 2</span>
-                    </div>
-                    <h2 className="text-2xl font-bold text-white">Prima Location</h2>
-                  </div>
+          <CardBox
+            className="mb-6 border border-gray-200 dark:border-slate-800"
+            isHoverable
+            footer={
+              <div className="flex items-center justify-between w-full">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  <Icon path={mdiCheck} size={16} className="inline mr-1 text-emerald-600" />
+                  Tutti i campi sono obbligatori
                 </div>
+                <Button
+                  label={isSubmitting ? "Salvataggio..." : "Completa Configurazione"}
+                  icon={isSubmitting ? undefined : mdiRocketLaunch}
+                  color="info"
+                  roundedFull
+                  type="submit"
+                  disabled={isSubmitting}
+                />
               </div>
-              <CardBoxComponentBody>
-                <FormField label="Nome Location" labelFor="locationName" icon={mdiMapMarker}>
-                  {(fieldData) => (
-                    <input
-                      {...fieldData}
-                      id="locationName"
-                      name="locationName"
-                      type="text"
-                      required
-                      value={formData.locationName}
-                      onChange={handleInputChange}
-                      placeholder="Es. Sede Centrale"
-                    />
-                  )}
-                </FormField>
-
-                <FormField label="Indirizzo" labelFor="locationAddress">
-                  {(fieldData) => (
-                    <input
-                      {...fieldData}
-                      id="locationAddress"
-                      name="locationAddress"
-                      type="text"
-                      required
-                      value={formData.locationAddress}
-                      onChange={handleInputChange}
-                      placeholder="Es. Via Roma 123"
-                    />
-                  )}
-                </FormField>
-
-                <FormField label="Città" labelFor="locationCity">
-                  {(fieldData) => (
-                    <input
-                      {...fieldData}
-                      id="locationCity"
-                      name="locationCity"
-                      type="text"
-                      required
-                      value={formData.locationCity}
-                      onChange={handleInputChange}
-                      placeholder="Es. Milano"
-                    />
-                  )}
-                </FormField>
-              </CardBoxComponentBody>
-              <CardBoxComponentFooter>
-                <div className="flex items-center justify-between w-full">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    <Icon path={mdiCheck} size="16" className="inline mr-1 text-green-500" />
-                    Tutti i campi sono obbligatori
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="group relative bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden"
-                  >
-                    <span className="relative z-10 flex items-center gap-2">
-                      {isSubmitting ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          Salvataggio...
-                        </>
-                      ) : (
-                        <>
-                          <Icon path={mdiRocketLaunch} size="20" />
-                          Completa Configurazione
-                        </>
-                      )}
-                    </span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </button>
-                </div>
-              </CardBoxComponentFooter>
+            }
+          >
+            <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100 dark:border-slate-800">
+              <Icon path={mdiMapMarker} size={20} className="text-blue-600" />
+              <div>
+                <p className="text-sm text-gray-500 dark:text-slate-400">Passo 2</p>
+                <h2 className="text-xl font-semibold">Prima Location</h2>
+              </div>
             </div>
-          </div>
+
+            <FormField label="Nome Location" labelFor="locationName" icon={mdiMapMarker}>
+              {(fieldData) => (
+                <input
+                  {...fieldData}
+                  id="locationName"
+                  name="locationName"
+                  type="text"
+                  required
+                  value={formData.locationName}
+                  onChange={handleInputChange}
+                  placeholder="Es. Sede Centrale"
+                />
+              )}
+            </FormField>
+
+            <FormField label="Indirizzo" labelFor="locationAddress">
+              {(fieldData) => (
+                <input
+                  {...fieldData}
+                  id="locationAddress"
+                  name="locationAddress"
+                  type="text"
+                  required
+                  value={formData.locationAddress}
+                  onChange={handleInputChange}
+                  placeholder="Es. Via Roma 123"
+                />
+              )}
+            </FormField>
+
+            <FormField label="Città" labelFor="locationCity">
+              {(fieldData) => (
+                <input
+                  {...fieldData}
+                  id="locationCity"
+                  name="locationCity"
+                  type="text"
+                  required
+                  value={formData.locationCity}
+                  onChange={handleInputChange}
+                  placeholder="Es. Milano"
+                />
+              )}
+            </FormField>
+          </CardBox>
         </form>
-      </SectionMain>
-    </div>
+    </SectionMain>
   );
 }
 
 export default function OnboardingPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        <SectionMain>
-          <div className="flex items-center justify-center py-24">
-            <div className="text-center">
-              <div className="relative w-16 h-16 mx-auto mb-6">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 animate-spin" style={{ animationDuration: '1.5s' }}></div>
-                <div className="absolute inset-2 rounded-full bg-white dark:bg-slate-900"></div>
+    <Suspense
+      fallback={
+        <div className="min-h-screen">
+          <SectionMain>
+            <div className="flex items-center justify-center py-24">
+              <div className="text-center">
+                <div className="relative w-16 h-16 mx-auto mb-6">
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 animate-spin" style={{ animationDuration: "1.5s" }}></div>
+                  <div className="absolute inset-2 rounded-full bg-white dark:bg-slate-900"></div>
+                </div>
+                <p className="text-lg font-medium text-gray-700 dark:text-slate-300">Caricamento...</p>
               </div>
-              <p className="text-lg font-medium text-gray-700 dark:text-slate-300">Caricamento...</p>
             </div>
-          </div>
-        </SectionMain>
-      </div>
-    }>
+          </SectionMain>
+        </div>
+      }
+    >
       <OnboardingContent />
     </Suspense>
   );
