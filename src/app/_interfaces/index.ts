@@ -33,7 +33,11 @@ export type ColorKey =
   | "success"
   | "danger"
   | "warning"
-  | "info";
+  | "info"
+  | "confirmation"
+  // Estensioni personalizzate per i pill tag dei ruoli
+  | "adminPill"
+  | "userPill";
 
 export type ColorButtonKey =
   | "white"

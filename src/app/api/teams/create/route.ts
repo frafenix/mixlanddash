@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Richiede il permesso 'teams:create' (solo admin/manager)
-    requirePermission('teams:create')(user.role);
+    requirePermission('teams:create')(user.id);
 
     const body = await request.json();
     const validatedData = createTeamSchema.parse(body);

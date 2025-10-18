@@ -15,6 +15,13 @@
       "when": 1760814946918,
       "tag": "0001_gigantic_infant_terrible",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1760826765310,
+      "tag": "0002_bitter_the_phantom",
+      "breakpoints": true
     }
   ]
 }

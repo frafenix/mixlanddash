@@ -56,7 +56,8 @@ async function deleteAllUsers() {
         // Elimina gli utenti uno per uno
         for (const user of stackUsers) {
           try {
-            await stackServerApp.deleteUser(user.id);
+            // ServerUser include UserExtra, che espone il metodo delete()
+            await user.delete();
             console.log(`✅ Utente eliminato: ${user.primaryEmail || user.id}`);
             eliminati++;
           } catch (error) {

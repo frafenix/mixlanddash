@@ -15,6 +15,7 @@ type Props = {
   children: ReactNode;
   onConfirm: () => void;
   onCancel?: () => void;
+  className?: string;
 };
 
 const CardBoxModal = ({
@@ -25,18 +26,20 @@ const CardBoxModal = ({
   children,
   onConfirm,
   onCancel,
+  className,
 }: Props) => {
   if (!isActive) {
     return null;
   }
 
   const footer = (
-    <Buttons>
+    <Buttons className="flex flex-wrap justify-end gap-2">
       <Button
         label={buttonLabel}
         color={buttonColor}
         onClick={onConfirm}
         isGrouped
+        className="mb-1"
       />
       {!!onCancel && (
         <Button
@@ -45,6 +48,7 @@ const CardBoxModal = ({
           outline
           onClick={onCancel}
           isGrouped
+          className="mb-1"
         />
       )}
     </Buttons>
@@ -56,7 +60,7 @@ const CardBoxModal = ({
       className={onCancel ? "cursor-pointer" : ""}
     >
       <CardBox
-        className={`transition-transform shadow-lg max-h-modal w-11/12 md:w-3/5 lg:w-2/5 xl:w-4/12 z-50`}
+        className={`transition-transform shadow-lg max-h-modal w-11/12 md:w-3/5 lg:w-2/5 xl:w-4/12 z-50 overflow-hidden ${className}`}
         isModal
         footer={footer}
       >

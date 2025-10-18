@@ -21,6 +21,18 @@ export const PERMISSIONS = {
     'invitations:create',
     'invitations:read',
     'invitations:revoke',
+    'attendances:create',
+    'attendances:read',
+    'attendances:update',
+    'attendances:delete',
+    'attendances:approve',
+    'attendances:reject',
+    'holidays:create',
+    'holidays:read',
+    'holidays:update',
+    'holidays:delete',
+    'holidays:approve',
+    'holidays:reject',
     'dashboard:admin',
   ],
   
@@ -32,6 +44,12 @@ export const PERMISSIONS = {
     'teams:update', // solo team assegnati
     'teams:manage_members', // solo team assegnati
     'companies:read',
+    'attendances:read', // può vedere presenze del team
+    'attendances:approve', // può approvare presenze
+    'attendances:reject', // può rifiutare presenze
+    'holidays:read', // può vedere ferie del team
+    'holidays:approve', // può approvare ferie
+    'holidays:reject', // può rifiutare ferie
     'dashboard:manager',
   ],
   
@@ -41,6 +59,12 @@ export const PERMISSIONS = {
     'users:update', // solo propri dati
     'teams:read', // solo team di appartenenza
     'companies:read', // solo propria company
+    'attendances:create', // può creare proprie presenze
+    'attendances:read', // solo proprie presenze
+    'attendances:update', // solo proprie presenze
+    'holidays:create', // può creare proprie ferie
+    'holidays:read', // solo proprie ferie
+    'holidays:update', // solo proprie ferie
     'dashboard:user',
   ],
 } as const;

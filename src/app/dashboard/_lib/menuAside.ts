@@ -1,17 +1,8 @@
 import {
   mdiAccountCircle,
   mdiMonitor,
-  mdiGithub,
-  mdiLock,
-  mdiAlertCircle,
-  mdiSquareEditOutline,
-  mdiTable,
-  mdiViewList,
-  mdiTelevisionGuide,
-  mdiResponsive,
-  mdiPalette,
-  mdiVuejs,
   mdiAccountGroup,
+  mdiCalendarMonth,
 } from "@mdi/js";
 import { MenuAsideItem } from "../../_interfaces";
 
@@ -27,73 +18,14 @@ const menuAside: MenuAsideItem[] = [
     label: "Team",
   },
   {
-    href: "/dashboard/tables",
-    label: "Tables",
-    icon: mdiTable,
-  },
-  {
-    href: "/dashboard/forms",
-    label: "Forms",
-    icon: mdiSquareEditOutline,
-  },
-  {
-    href: "/dashboard/ui",
-    label: "UI",
-    icon: mdiTelevisionGuide,
-  },
-  {
-    href: "/dashboard/responsive",
-    label: "Responsive",
-    icon: mdiResponsive,
-  },
-  {
-    href: "/",
-    label: "Styles",
-    icon: mdiPalette,
+    href: "/dashboard/presenze",
+    icon: mdiCalendarMonth,
+    label: "Presenze",
   },
   {
     href: "/dashboard/profile",
-    label: "Profile",
+    label: "Profilo",
     icon: mdiAccountCircle,
-  },
-  {
-    href: "/dashboard/team",
-    label: "Team",
-    icon: mdiAccountGroup,
-  },
-  {
-    href: "/login",
-    label: "Login",
-    icon: mdiLock,
-  },
-  {
-    href: "/error",
-    label: "Error",
-    icon: mdiAlertCircle,
-  },
-  {
-    label: "Dropdown",
-    icon: mdiViewList,
-    menu: [
-      {
-        label: "Item One",
-      },
-      {
-        label: "Item Two",
-      },
-    ],
-  },
-  {
-    href: "https://github.com/justboil/admin-one-react-tailwind",
-    label: "GitHub",
-    icon: mdiGithub,
-    target: "_blank",
-  },
-  {
-    href: "https://github.com/justboil/admin-one-vue-tailwind",
-    label: "Vue version",
-    icon: mdiVuejs,
-    target: "_blank",
   },
 ];
 

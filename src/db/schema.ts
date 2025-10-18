@@ -68,11 +68,55 @@ export const teams = pgTable('teams', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+// Tabella per gestire le presenze mensili
+export const attendances = pgTable('attendances', {
+  id: serial('id').primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull().references(() => users.id, { onDelete: 'cascade' }),
+  companyId: integer('company_id').notNull().references(() => companies.id, { onDelete: 'cascade' }),
+  month: integer('month').notNull(), // 1-12
+  year: integer('year').notNull(),
+  days: jsonb('days').notNull(), // Array of { date: string, hours: number, mealVoucher: boolean, workLocation: 'office' | 'remote' }
+  status: text('status', { enum: ['pending', 'submitted', 'approved', 'rejected'] }).default('pending').notNull(),
+  submittedAt: timestamp('submitted_at'),
+  approvedAt: timestamp('approved_at'),
+  approvedBy: varchar('approved_by', { length: 255 }).references(() => users.id),
+  rejectedAt: timestamp('rejected_at'),
+  rejectedBy: varchar('rejected_by', { length: 255 }).references(() => users.id),
+  rejectionReason: text('rejection_reason'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Tabella per gestire le richieste di ferie
+export const holidays = pgTable('holidays', {
+  id: serial('id').primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull().references(() => users.id, { onDelete: 'cascade' }),
+  companyId: integer('company_id').notNull().references(() => companies.id, { onDelete: 'cascade' }),
+  startDate: timestamp('start_date').notNull(),
+  endDate: timestamp('end_date').notNull(),
+  days: integer('days').notNull(), // Numero di giorni di ferie richiesti
+  reason: text('reason'),
+  status: text('status', { enum: ['pending', 'approved', 'rejected'] }).default('pending').notNull(),
+  approvedAt: timestamp('approved_at'),
+  approvedBy: varchar('approved_by', { length: 255 }).references(() => users.id),
+  rejectedAt: timestamp('rejected_at'),
+  rejectedBy: varchar('rejected_by', { length: 255 }).references(() => users.id),
+  rejectionReason: text('rejection_reason'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   companies: many(companies),
   sentInvitations: many(invitations, { relationName: 'invitedBy' }),
   acceptedInvitations: many(invitations, { relationName: 'acceptedBy' }),
+  attendances: many(attendances),
+  holidays: many(holidays),
+  approvedAttendances: many(attendances, { relationName: 'approvedBy' }),
+  rejectedAttendances: many(attendances, { relationName: 'rejectedBy' }),
+  approvedHolidays: many(holidays, { relationName: 'approvedBy' }),
+  rejectedHolidays: many(holidays, { relationName: 'rejectedBy' }),
 }));
 
 export const invitationsRelations = relations(invitations, ({ one }) => ({
@@ -116,5 +160,47 @@ export const teamsRelations = relations(teams, ({ one }) => ({
   company: one(companies, {
     fields: [teams.companyId],
     references: [companies.id],
+  }),
+}));
+
+export const attendancesRelations = relations(attendances, ({ one }) => ({
+  user: one(users, {
+    fields: [attendances.userId],
+    references: [users.id],
+  }),
+  company: one(companies, {
+    fields: [attendances.companyId],
+    references: [companies.id],
+  }),
+  approver: one(users, {
+    fields: [attendances.approvedBy],
+    references: [users.id],
+    relationName: 'approvedBy',
+  }),
+  rejecter: one(users, {
+    fields: [attendances.rejectedBy],
+    references: [users.id],
+    relationName: 'rejectedBy',
+  }),
+}));
+
+export const holidaysRelations = relations(holidays, ({ one }) => ({
+  user: one(users, {
+    fields: [holidays.userId],
+    references: [users.id],
+  }),
+  company: one(companies, {
+    fields: [holidays.companyId],
+    references: [companies.id],
+  }),
+  approver: one(users, {
+    fields: [holidays.approvedBy],
+    references: [users.id],
+    relationName: 'approvedBy',
+  }),
+  rejecter: one(users, {
+    fields: [holidays.rejectedBy],
+    references: [users.id],
+    relationName: 'rejectedBy',
   }),
 }));

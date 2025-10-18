@@ -13,6 +13,9 @@ export const colorsBgLight = {
   danger: "bg-red-500 border-red-500 text-white",
   warning: "bg-yellow-500 border-yellow-500 text-white",
   info: "bg-blue-500 border-blue-500 text-white",
+  confirmation: "bg-blue-500 border-blue-500 text-white",
+  adminPill: "bg-[#5c2d88] border-[#5c2d88] text-white",
+  userPill: "bg-[#182951] border-[#182951] text-white",
 };
 
 export const colorsText = {
@@ -23,6 +26,8 @@ export const colorsText = {
   danger: "text-red-500",
   warning: "text-yellow-500",
   info: "text-blue-500",
+  adminPill: "text-[#5c2d88]",
+  userPill: "text-[#182951]",
 };
 
 export const colorsOutline = {
@@ -35,6 +40,8 @@ export const colorsOutline = {
   danger: [colorsText.danger, "border-red-500"].join(" "),
   warning: [colorsText.warning, "border-yellow-500"].join(" "),
   info: [colorsText.info, "border-blue-500"].join(" "),
+  adminPill: [colorsText.adminPill, "border-[#5c2d88]"].join(" "),
+  userPill: [colorsText.userPill, "border-[#182951]"].join(" "),
 };
 
 export const getButtonColor = (
@@ -57,6 +64,8 @@ export const getButtonColor = (
       danger: "ring-red-300 dark:ring-red-700",
       warning: "ring-yellow-300 dark:ring-yellow-700",
       info: "ring-blue-300 dark:ring-blue-700",
+      adminPill: "ring-purple-300 dark:ring-purple-700",
+      userPill: "ring-blue-300 dark:ring-blue-700",
     },
     active: {
       white: "bg-gray-100",
@@ -67,6 +76,8 @@ export const getButtonColor = (
       danger: "bg-red-700 dark:bg-red-600",
       warning: "bg-yellow-700 dark:bg-yellow-600",
       info: "bg-blue-700 dark:bg-blue-600",
+      adminPill: "bg-purple-700 dark:bg-purple-600",
+      userPill: "bg-blue-700 dark:bg-blue-600",
     },
     bg: {
       white: "bg-white text-black",
@@ -90,6 +101,8 @@ export const getButtonColor = (
       warning:
         "hover:bg-yellow-700 hover:border-yellow-700 dark:hover:bg-yellow-600 dark:hover:border-yellow-600",
       info: "hover:bg-blue-700 hover:border-blue-700 dark:hover:bg-blue-600 dark:hover:border-blue-600",
+      adminPill: "hover:bg-purple-700 hover:border-purple-700 dark:hover:bg-purple-600 dark:hover:border-purple-600",
+      userPill: "hover:bg-blue-700 hover:border-blue-700 dark:hover:bg-blue-600 dark:hover:border-blue-600",
     },
     borders: {
       white: "border-white",
@@ -100,6 +113,8 @@ export const getButtonColor = (
       danger: "border-red-600 dark:border-red-500",
       warning: "border-yellow-600 dark:border-yellow-500",
       info: "border-blue-600 dark:border-blue-500",
+      adminPill: "border-purple-600 dark:border-purple-500",
+      userPill: "border-blue-600 dark:border-blue-500",
     },
     text: {
       contrast: "dark:text-slate-100",
@@ -107,6 +122,12 @@ export const getButtonColor = (
       danger: "text-red-600 dark:text-red-500",
       warning: "text-yellow-600 dark:text-yellow-500",
       info: "text-blue-600 dark:text-blue-500",
+      white: "text-black dark:text-slate-100",
+      light: "text-gray-700 dark:text-slate-400",
+      adminPill: "text-purple-600 dark:text-purple-500",
+      userPill: "text-blue-600 dark:text-blue-500",
+      whiteDark: "text-black dark:text-slate-100",
+      lightDark: "text-gray-700 dark:text-slate-400",
     },
     outlineHover: {
       contrast:
@@ -118,6 +139,11 @@ export const getButtonColor = (
       warning:
         "hover:bg-yellow-600 hover:text-white hover:text-white dark:hover:text-white dark:hover:border-yellow-600",
       info: "hover:bg-blue-600 hover:text-white dark:hover:text-white dark:hover:border-blue-600",
+      adminPill: "hover:bg-purple-600 hover:text-white dark:hover:text-white dark:hover:border-purple-600",
+      userPill: "hover:bg-blue-600 hover:text-white dark:hover:text-white dark:hover:border-blue-600",
+      white: "hover:bg-gray-100",
+      whiteDark: "hover:bg-gray-100 dark:hover:bg-slate-800",
+      lightDark: "hover:bg-gray-200 dark:hover:bg-slate-700",
     },
   };
 

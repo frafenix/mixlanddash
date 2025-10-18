@@ -8,7 +8,7 @@ import * as z from "zod";
 import { 
   mdiAccountGroup, mdiPlus, mdiPencil, mdiTrashCan, mdiEye, mdiDomain, 
   mdiAccountHardHat, mdiShieldAccount, mdiAccountSupervisor, mdiAccount,
-  mdiCheckCircle, mdiClockOutline, mdiAlertCircle
+  mdiCheckCircle, mdiClockOutline, mdiAlertCircle, mdiInformation
 } from "@mdi/js";
 
 import SectionMain from "../../_components/Section/Main";
@@ -20,6 +20,8 @@ import FormField from "../../_components/FormField";
 import Icon from "../../_components/Icon";
 import PillTag from "../../_components/PillTag";
 import { toast } from "sonner";
+import NotificationBar from "../../_components/NotificationBar";
+import type { ColorKey } from "../../_interfaces";
 
 // Definizione degli schemi per i form
 const inviteFormSchema = z.object({
@@ -66,6 +68,12 @@ export default function TeamPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [userRole, setUserRole] = useState<string>("USER"); // Default a USER, verrà aggiornato
   const [userTeams, setUserTeams] = useState<Team[]>([]);
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const [notification, setNotification] = useState<{type: "success" | "danger" | "warning" | null, message: string | null}>({
+    type: null,
+    message: null
+  });
+  const [pendingRoleChange, setPendingRoleChange] = useState<{memberId: string, newRole: "ADMIN" | "MANAGER" | "USER"} | null>(null);
 
   // Form per l'invito
   const inviteForm = useForm<z.infer<typeof inviteFormSchema>>({
@@ -85,6 +93,26 @@ export default function TeamPage() {
       description: "",
     },
   });
+
+  // Aggiungi event listener per chiudere i menu quando si clicca fuori
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const menus = document.querySelectorAll('.role-menu:not(.hidden)');
+      menus.forEach((menu) => {
+        const triggerButton = (event.target as Element | null)?.closest('button');
+        const isClickOnThisMenuToggle = triggerButton?.nextElementSibling === menu;
+
+        if (!menu.contains(event.target as Node) && !isClickOnThisMenuToggle) {
+          (menu as HTMLElement).classList.add('hidden');
+        }
+      });
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Carica i membri del team e i team all'avvio
   useEffect(() => {
@@ -227,39 +255,102 @@ export default function TeamPage() {
     }
   }
 
-  // Funzione per cambiare ruolo (demo)
-  const handleRoleChange = (memberId: string, newRole: "ADMIN" | "MANAGER" | "USER") => {
-    setTeamMembers(members => 
-      members.map(member => 
-        member.id === memberId ? {...member, role: newRole} : member
-      )
-    );
-    toast.success("Ruolo aggiornato con successo");
+  const handleRoleChange = async (memberId: string, newRole: "ADMIN" | "MANAGER" | "USER") => {
+    const memberToUpdate = teamMembers.find(member => member.id === memberId);
+
+    if (memberToUpdate?.role === "ADMIN") {
+      setNotification({
+        type: "danger",
+        message: "The role of an admin user cannot be changed."
+      });
+      return;
+    }
+
+    
+    // Imposta il cambio di ruolo in attesa di conferma
+    setPendingRoleChange({memberId, newRole});
+  };
+
+  // Funzione per confermare il cambio di ruolo
+  const confirmRoleChange = async () => {
+    if (!pendingRoleChange) return;
+    
+    try {
+      setIsLoading(true);
+      
+      // In produzione, sostituire con una vera API call
+      setTimeout(() => {
+        setTeamMembers(members => 
+          members.map(member => 
+            member.id === pendingRoleChange.memberId ? {...member, role: pendingRoleChange.newRole} : member
+          )
+        );
+        
+        setNotification({
+          type: "success",
+          message: "Ruolo aggiornato con successo"
+        });
+        
+        setPendingRoleChange(null);
+        setIsLoading(false);
+      }, 500);
+    } catch (error: any) {
+      setNotification({
+        type: "danger",
+        message: error.message || "Errore nell'aggiornamento del ruolo"
+      });
+      setIsLoading(false);
+    }
+  };
+
+  // Funzione per annullare il cambio di ruolo
+  const cancelRoleChange = () => {
+    setPendingRoleChange(null);
   };
 
   // Funzione per rimuovere un membro (demo)
   const handleRemoveMember = (memberId: string) => {
     setTeamMembers(members => members.filter(member => member.id !== memberId));
-    toast.success("Membro rimosso con successo");
+    setNotification({
+      type: "success",
+      message: "Membro rimosso con successo"
+    });
   };
 
+  // Chiudi i menu quando si clicca fuori
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.role-menu') && !target.closest('button[title="Cambia ruolo"]')) {
+        document.querySelectorAll('.role-menu:not(.hidden)').forEach(menu => {
+          menu.classList.add('hidden');
+        });
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   // Funzione per ottenere l'icona e il colore del badge in base al ruolo
-  const getRoleIconAndColor = (role: string): { icon: string; color: "danger" | "info" | "warning" | "success" } => {
+  const getRoleIconAndColor = (role: string): { icon: string; color: ColorKey } => {
     switch (role) {
-      case "ADMIN": return { icon: mdiShieldAccount, color: "danger" };
-      case "MANAGER": return { icon: mdiAccountSupervisor, color: "info" };
-      case "USER": return { icon: mdiAccount, color: "warning" };
-      default: return { icon: mdiAccount, color: "warning" };
+      case "ADMIN": return { icon: mdiShieldAccount, color: "adminPill" } as const;
+      case "MANAGER": return { icon: mdiAccountSupervisor, color: "info" } as const;
+      case "USER": return { icon: mdiAccount, color: "userPill" } as const;
+      default: return { icon: mdiAccount, color: "warning" } as const;
     }
   };
 
   // Funzione per ottenere l'icona e il colore del badge in base allo stato
-  const getStatusIconAndColor = (status: string): { icon: string; color: "danger" | "info" | "warning" | "success" } => {
+  const getStatusIconAndColor = (status: string): { icon: string; color: ColorKey } => {
     switch (status) {
-      case "ACTIVE": return { icon: mdiCheckCircle, color: "success" };
-      case "PENDING": return { icon: mdiClockOutline, color: "warning" };
-      case "SUSPENDED": return { icon: mdiAlertCircle, color: "danger" };
-      default: return { icon: mdiClockOutline, color: "warning" };
+      case "ACTIVE": return { icon: mdiCheckCircle, color: "success" } as const;
+      case "PENDING": return { icon: mdiClockOutline, color: "warning" } as const;
+      case "SUSPENDED": return { icon: mdiAlertCircle, color: "danger" } as const;
+      default: return { icon: mdiClockOutline, color: "warning" } as const;
     }
   };
 
@@ -316,6 +407,53 @@ export default function TeamPage() {
       <p className="text-gray-500 dark:text-gray-400 mb-6">
         Gestisci i membri del tuo team, assegna ruoli e invia nuovi inviti.
       </p>
+
+      {notification.type && notification.message && (
+        <NotificationBar 
+          color={notification.type} 
+          icon={notification.type === "success" ? mdiCheckCircle : notification.type === "danger" ? mdiAlertCircle : mdiInformation}
+          button={
+            <Button
+              color={notification.type === "success" ? "success" : notification.type === "danger" ? "danger" : "warning"}
+              label="Chiudi"
+              roundedFull
+              small
+              onClick={() => setNotification({type: null, message: null})}
+            />
+          }
+        >
+          {notification.message}
+        </NotificationBar>
+      )}
+
+      {pendingRoleChange && (
+        <NotificationBar 
+          color="confirmation" 
+          icon={mdiInformation}
+          button={
+            <div className="flex space-x-2">
+              <Button
+                color="success"
+                label="Conferma"
+                roundedFull
+                small
+                onClick={confirmRoleChange}
+                disabled={isLoading}
+              />
+              <Button
+                color="danger"
+                label="Annulla"
+                roundedFull
+                small
+                onClick={cancelRoleChange}
+                disabled={isLoading}
+              />
+            </div>
+          }
+        >
+          Conferma il cambio di ruolo a <b>{pendingRoleChange.newRole}</b> per questo membro?
+        </NotificationBar>
+      )}
 
       {/* Modale di invito */}
       <CardBoxModal
@@ -508,17 +646,46 @@ export default function TeamPage() {
                       <div className="flex space-x-2">
                         {userRole === "ADMIN" && (
                           <>
-                            <button 
-                              onClick={() => {
-                                const newRole = member.role === "ADMIN" ? "MANAGER" : 
-                                              member.role === "MANAGER" ? "USER" : "ADMIN";
-                                handleRoleChange(member.id, newRole);
-                              }}
-                              className="p-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                              title="Cambia ruolo"
-                            >
-                              <Icon path={mdiPencil} size="18" />
-                            </button>
+                            <div className="relative">
+                              <button 
+                                onClick={(e) => {
+                                  // Chiudi tutti gli altri menu aperti
+                                  document.querySelectorAll('.role-menu:not(.hidden)').forEach(menu => {
+                                    if (menu !== e.currentTarget.nextElementSibling) {
+                                      menu.classList.add('hidden');
+                                    }
+                                  });
+                                  // Apri/chiudi questo menu
+                                  e.currentTarget.nextElementSibling?.classList.toggle('hidden');
+                                }}
+                                className="p-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                                title="Cambia ruolo"
+                              >
+                                <Icon path={mdiPencil} size="18" />
+                              </button>
+                              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 hidden role-menu">
+                                <div className="py-1">
+                                  <button
+                                    onClick={() => handleRoleChange(member.id, "ADMIN")}
+                                    className={`block px-4 py-2 text-sm w-full text-left ${member.role === "ADMIN" ? "bg-blue-100 dark:bg-blue-900" : "hover:bg-gray-100 dark:hover:bg-gray-700"}`}
+                                  >
+                                    Admin
+                                  </button>
+                                  <button
+                                    onClick={() => handleRoleChange(member.id, "MANAGER")}
+                                    className={`block px-4 py-2 text-sm w-full text-left ${member.role === "MANAGER" ? "bg-blue-100 dark:bg-blue-900" : "hover:bg-gray-100 dark:hover:bg-gray-700"}`}
+                                  >
+                                    Manager
+                                  </button>
+                                  <button
+                                    onClick={() => handleRoleChange(member.id, "USER")}
+                                    className={`block px-4 py-2 text-sm w-full text-left ${member.role === "USER" ? "bg-blue-100 dark:bg-blue-900" : "hover:bg-gray-100 dark:hover:bg-gray-700"}`}
+                                  >
+                                    User
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
                             <button 
                               onClick={() => handleRemoveMember(member.id)}
                               className="p-1 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
@@ -538,7 +705,8 @@ export default function TeamPage() {
                           </button>
                         )}
                         <button 
-                          className="p-1 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300"
+                          onClick={() => setSelectedMember(member)}
+                          className="p-1 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 transition-transform hover:scale-110"
                           title="Visualizza dettagli"
                         >
                           <Icon path={mdiEye} size="18" />

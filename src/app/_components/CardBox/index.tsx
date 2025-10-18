@@ -28,11 +28,10 @@ export default function CardBox({
   onClick,
 }: Props) {
   const componentClass = [
-    "bg-white flex",
+    flex,
     className,
     rounded,
-    flex,
-    isModal ? "dark:bg-slate-900" : "dark:bg-slate-900/70",
+    isModal ? "bg-white dark:bg-slate-900" : "dark:bg-slate-900/70",
   ];
 
   if (isHoverable) {
@@ -49,7 +48,7 @@ export default function CardBox({
         <CardBoxComponentBody noPadding={hasTable}>
           {children}
         </CardBoxComponentBody>
-        {footer && <CardBoxComponentFooter>{footer}</CardBoxComponentFooter>}
+        {footer && <CardBoxComponentFooter className="flex-wrap">{footer}</CardBoxComponentFooter>}
       </>
     ),
   );
