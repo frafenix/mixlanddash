@@ -4,6 +4,7 @@ import {
   mdiAccountGroup,
   mdiCalendarMonth,
   mdiBeach,
+  mdiCashMultiple,
 } from "@mdi/js";
 import { MenuAsideItem } from "../../_interfaces";
 
@@ -27,6 +28,11 @@ const menuAside: MenuAsideItem[] = [
     href: "/dashboard/ferie",
     icon: mdiBeach,
     label: "Ferie",
+  },
+  {
+    href: "/dashboard/spese",
+    icon: mdiCashMultiple,
+    label: "Spese",
   },
   {
     href: "/dashboard/profile",

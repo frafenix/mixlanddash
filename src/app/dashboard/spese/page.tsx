@@ -20,7 +20,8 @@ import {
   mdiCurrencyEur,
   mdiTrendingUp,
   mdiClockOutline,
-  mdiFileDocument
+  mdiFileDocument,
+  mdiChartPie
 } from "@mdi/js";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -28,6 +29,18 @@ import PillTag from "../../_components/PillTag";
 import { ColorKey } from "../../_interfaces";
 import Icon from "../../_components/Icon";
 import ExpenseModal from "./_components/ExpenseModal";
+import { useAuth } from "@/lib/auth";
+import { RoleBasedAccess } from "@/components/RoleBasedAccess";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  ChartOptions,
+} from "chart.js";
+import { Pie } from "react-chartjs-2";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 // Tipi per la gestione delle spese
 type ExpenseStatus = "pending" | "approved" | "rejected";
@@ -181,6 +194,7 @@ const getTypeColor = (type: ExpenseType): ColorKey => {
 
 export default function SpesePage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [expenses, setExpenses] = useState<Expense[]>(mockExpenses);
   const [expenseSummary, setExpenseSummary] = useState<ExpenseSummary>(mockExpenseSummary);
   const [filterStatus, setFilterStatus] = useState<ExpenseStatus | "all">("all");
@@ -197,6 +211,74 @@ export default function SpesePage() {
     const typeMatch = filterType === "all" || expense.type === filterType;
     return statusMatch && typeMatch;
   });
+
+  // Funzione per calcolare i dati del grafico a torta
+  const getChartData = () => {
+    const categoryTotals = expenses.reduce((acc, expense) => {
+      if (expense.status === 'approved') {
+        const typeLabel = getTypeLabel(expense.type);
+        acc[typeLabel] = (acc[typeLabel] || 0) + expense.amount;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
+    const labels = Object.keys(categoryTotals);
+    const data = Object.values(categoryTotals);
+    const colors = [
+      '#3B82F6', // Blue
+      '#10B981', // Emerald
+      '#F59E0B', // Amber
+      '#EF4444', // Red
+      '#8B5CF6', // Purple
+    ];
+
+    return {
+      labels,
+      datasets: [
+        {
+          data,
+          backgroundColor: colors.slice(0, labels.length),
+          borderColor: '#ffffff',
+          borderWidth: 2,
+        },
+      ],
+    };
+  };
+
+  const chartOptions: ChartOptions<'pie'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          padding: 20,
+          usePointStyle: true,
+          font: {
+            size: 12,
+          },
+        },
+      },
+      tooltip: {
+        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+        titleColor: 'rgba(243, 244, 246, 1)',
+        bodyColor: 'rgba(209, 213, 219, 1)',
+        borderColor: 'rgba(75, 85, 99, 0.3)',
+        borderWidth: 1,
+        cornerRadius: 8,
+        padding: 12,
+        callbacks: {
+          label: function(context) {
+            const label = context.label || '';
+            const value = context.parsed || 0;
+            const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+            const percentage = ((value / total) * 100).toFixed(1);
+            return `${label}: €${value.toFixed(2)} (${percentage}%)`;
+          },
+        },
+      },
+    },
+  };
 
   const handleNewExpense = () => {
     setIsNewExpenseModalActive(true);
@@ -233,6 +315,25 @@ export default function SpesePage() {
       color: "success"
     });
     setIsNewExpenseModalActive(false);
+  };
+
+  const handleApproveExpense = (id: string) => {
+    setExpenses(expenses.map(expense => 
+      expense.id === id 
+        ? { ...expense, status: 'approved' as const, approvalDate: new Date().toISOString().split('T')[0], approvedBy: user?.name || 'Manager' }
+        : expense
+    ));
+  };
+
+  const handleRejectExpense = (id: string) => {
+    const reason = window.prompt('Motivo del rifiuto (opzionale):');
+    if (reason !== null) {
+      setExpenses(expenses.map(expense => 
+        expense.id === id 
+          ? { ...expense, status: 'rejected' as const, rejectionReason: reason || 'Rifiutata' }
+          : expense
+      ));
+    }
   };
 
   return (
@@ -449,6 +550,50 @@ export default function SpesePage() {
           </ColoredCardBox>
         </div>
 
+        {/* Grafico distribuzione spese per categoria */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          <div className="lg:col-span-2">
+            <CardBox className="animate-fade-in-up stagger-5 h-96">
+              <h3 className="text-lg font-semibold mb-4 flex items-center">
+                <Icon path={mdiChartPie} className="w-5 h-5 mr-2" />
+                Distribuzione Spese per Categoria
+              </h3>
+              <div className="h-80">
+                <Pie data={getChartData()} options={chartOptions} />
+              </div>
+            </CardBox>
+          </div>
+          
+          {/* Card aggiuntiva per statistiche */}
+          <div>
+            <CardBox className="animate-fade-in-up stagger-6 h-96">
+              <h3 className="text-lg font-semibold mb-4">Statistiche Rapide</h3>
+              <div className="space-y-4">
+                <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Spesa media</p>
+                  <p className="text-xl font-bold">
+                    €{(expenseSummary.totalApproved / Math.max(expenses.filter(e => e.status === 'approved').length, 1)).toFixed(2)}
+                  </p>
+                </div>
+                <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Numero spese approvate</p>
+                  <p className="text-xl font-bold">
+                    {expenses.filter(e => e.status === 'approved').length}
+                  </p>
+                </div>
+                <div className="p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Tasso di approvazione</p>
+                  <p className="text-xl font-bold">
+                    {expenses.length > 0 
+                      ? ((expenses.filter(e => e.status === 'approved').length / expenses.length) * 100).toFixed(1)
+                      : 0}%
+                  </p>
+                </div>
+              </div>
+            </CardBox>
+          </div>
+        </div>
+
         {/* Tabella storico spese */}
         <CardBox hasTable className="animate-fade-in-up">
           <div className="flex justify-between items-center mb-4">
@@ -480,6 +625,7 @@ export default function SpesePage() {
                 <th>Progetto/Cliente</th>
                 <th>Utente</th>
                 <th>Stato</th>
+                <th>Commento Manager</th>
                 <th>Data Richiesta</th>
                 <th>Allegati</th>
                 <th>Azioni</th>
@@ -530,6 +676,11 @@ export default function SpesePage() {
                         small
                       />
                     </td>
+                    <td data-label="Commento Manager">
+                      <span className="text-sm text-gray-600">
+                        {expense.rejectionReason || expense.approvedBy || '-'}
+                      </span>
+                    </td>
                     <td data-label="Data Richiesta">
                       {format(new Date(expense.requestDate), "dd/MM/yyyy", { locale: it })}
                     </td>
@@ -555,22 +706,24 @@ export default function SpesePage() {
                           small
                           onClick={() => {/* TODO: Implementa visualizzazione dettagli */}}
                         />
-                        {expense.status === "pending" && (
-                          <>
-                            <Button
-                              icon={mdiCheckCircle}
-                              color="success"
-                              small
-                              onClick={() => {/* TODO: Implementa approvazione */}}
-                            />
-                            <Button
-                              icon={mdiCancel}
-                              color="danger"
-                              small
-                              onClick={() => {/* TODO: Implementa rifiuto */}}
-                            />
-                          </>
-                        )}
+                        <RoleBasedAccess allowedRoles={['manager', 'admin']}>
+                          {expense.status === "pending" && (
+                            <>
+                              <Button
+                                icon={mdiCheckCircle}
+                                color="success"
+                                small
+                                onClick={() => handleApproveExpense(expense.id)}
+                              />
+                              <Button
+                                icon={mdiCancel}
+                                color="danger"
+                                small
+                                onClick={() => handleRejectExpense(expense.id)}
+                              />
+                            </>
+                          )}
+                        </RoleBasedAccess>
                       </div>
                     </td>
                   </tr>
