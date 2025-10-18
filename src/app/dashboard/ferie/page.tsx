@@ -26,6 +26,7 @@ import { it } from "date-fns/locale";
 import PillTag from "../../_components/PillTag";
 import { ColorKey } from "../../_interfaces";
 import Icon from "../../_components/Icon";
+import LeaveRequestModal from "../presenze/_components/LeaveRequestModal";
 
 // Simuliamo il contesto utente
 const useUserContext = () => ({ user: { role: "ADMIN", name: "Admin User" } });
@@ -200,6 +201,26 @@ export default function FeriePage() {
           onClick={handleNewRequest}
         />
       </SectionTitleLineWithButton>
+
+      {notification && (
+        <NotificationBar
+          color={notification.color}
+          icon={notification.color === "success" ? mdiCheckCircle : mdiAlertCircle}
+        >
+          {notification.message}
+        </NotificationBar>
+      )}
+
+      {isNewRequestModalActive && (
+        <LeaveRequestModal
+          isActive={isNewRequestModalActive}
+          onClose={() => setIsNewRequestModalActive(false)}
+          onSubmit={(data) => {
+            console.log("Dati inviati:", data);
+            setIsNewRequestModalActive(false);
+          }}
+        />
+      )}
 
       <SectionMain>
         {notification && (
@@ -506,38 +527,3 @@ export default function FeriePage() {
     </>
   );
 }
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <ColoredCardBox
-          gradient={false}
-          className="animate-fade-in-up bg-[#26b56b] text-white"
-        >
-          <p className="text-lg font-semibold">
-            <Icon path={mdiBeach} size={1} className="inline-block mr-2" />
-            Ferie Disponibili
-          </p>
-          <p className="text-3xl font-bold mt-2">{mockLeaveBalance.ferieAvailable}</p>
-        </ColoredCardBox>
-
-        <ColoredCardBox
-          gradient={false}
-          className="animate-fade-in-up bg-[#2563eb] text-white"
-        >
-          <p className="text-lg font-semibold">
-            <Icon path={mdiClockOutline} size={1} className="inline-block mr-2" />
-            Permessi Disponibili
-          </p>
-          <p className="text-3xl font-bold mt-2">{mockLeaveBalance.permessiAvailable}</p>
-        </ColoredCardBox>
-
-        <ColoredCardBox
-          gradient={false}
-          className="animate-fade-in-up bg-[#182951] text-white"
-        >
-          <p className="text-lg font-semibold">
-            <Icon path={mdiCalendarClock} size={1} className="inline-block mr-2" />
-            Giorni Rollover
-          </p>
-          <p className="text-3xl font-bold mt-2">{mockLeaveBalance.rolloverDays}</p>
-        </ColoredCardBox>
-      </div>

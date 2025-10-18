@@ -1,0 +1,90 @@
+{
+  "header": {
+    "backgroundColor": "#F9FAFB",
+    "fontFamily": "'Inter', sans-serif",
+    "title": {
+      "text": "Il Software HR All-in-One per la tua Azienda",
+      "fontSize": "3rem",
+      "fontWeight": "700",
+      "color": "#111827",
+      "textAlign": "center",
+      "marginBottom": "0.5rem"
+    },
+    "subtitle": {
+      "text": "Gestisci presenze, ferie, buste paga e molto altro con un'unica piattaforma. Semplifica i processi HR e concentrati su ciò che conta davvero.",
+      "fontSize": "1.125rem",
+      "fontWeight": "400",
+      "color": "#6B7280",
+      "textAlign": "center",
+      "maxWidth": "600px",
+      "margin": "0 auto 2rem auto"
+    },
+    "buttons": [
+      {
+        "text": "Prova Gratuita",
+        "backgroundColor": "#2563EB",
+        "color": "#FFFFFF",
+        "borderRadius": "8px",
+        "padding": "0.75rem 2rem",
+        "fontSize": "1rem",
+        "fontWeight": "600",
+        "boxShadow": "0 10px 15px -3px rgba(37, 99, 235, 0.5)",
+        "hover": {
+          "backgroundColor": "#1E40AF",
+          "boxShadow": "0 12px 20px -2px rgba(30, 64, 175, 0.7)"
+        },
+        "marginRight": "1rem"
+      },
+      {
+        "text": "Scopri di più",
+        "backgroundColor": "#FFFFFF",
+        "color": "#374151",
+        "border": "2px solid #D1D5DB",
+        "borderRadius": "8px",
+        "padding": "0.75rem 2rem",
+        "fontSize": "1rem",
+        "fontWeight": "600",
+        "hover": {
+          "backgroundColor": "#F3F4F6",
+          "borderColor": "#2563EB",
+          "color": "#2563EB"
+        }
+      }
+    ]
+  },
+  "section": {
+    "backgroundColor": "#FFFFFF",
+    "maxWidth": "960px",
+    "margin": "4rem auto",
+    "padding": "2rem",
+    "title": {
+      "text": "Tutto quello che serve per gestire le Risorse Umane",
+      "fontSize": "2rem",
+      "fontWeight": "700",
+      "color": "#111827",
+      "textAlign": "center",
+      "marginBottom": "0.5rem"
+    },
+    "subtitle": {
+      "text": "Una soluzione completa per semplificare tutti i processi HR",
+      "fontSize": "1rem",
+      "fontWeight": "400",
+      "color": "#6B7280",
+      "textAlign": "center",
+      "marginBottom": "3rem"
+    },
+    "features": {
+      "layout": "grid",
+      "gridTemplateColumns": "repeat(auto-fit, minmax(220px, 1fr))",
+      "gap": "2rem",
+      "featureStyle": {
+        "iconBackgroundColors": ["#DBEAFE", "#DCFCE7", "#F5E8FF"],
+        "iconSize": "48px",
+        "titleFontSize": "1.125rem",
+        "titleFontWeight": "600",
+        "textColor": "#111827",
+        "textAlign": "center"
+      }
+    }
+  }
+}

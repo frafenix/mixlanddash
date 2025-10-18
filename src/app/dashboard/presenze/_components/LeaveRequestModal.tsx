@@ -4,7 +4,7 @@ import { useState } from "react";
 import CardBoxModal from "../../../_components/CardBox/Modal";
 import Button from "../../../_components/Button";
 import Icon from "../../../_components/Icon";
-import { mdiCalendar, mdiClockOutline, mdiSend } from "@mdi/js";
+import { mdiCalendar, mdiClockOutline, mdiSend, mdiBeach } from "@mdi/js";
 import { format, addDays, addMonths, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
 import { it } from "date-fns/locale";
 
@@ -80,33 +80,53 @@ export default function LeaveRequestModal({ isActive, onClose, onSubmit }: Leave
           </div>
         </div>
 
-        {/* Ore */}
-        <div className="space-y-3">
-          <div className="flex items-center space-x-2">
-            <Icon path={mdiClockOutline} size="20" className="text-blue-500" />
-            <h3 className="text-lg font-semibold">Ore</h3>
-          </div>
-          <div className="flex items-center justify-center">
-            <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
-              <button
-                onClick={() => setHours(Math.max(0, hours - 1))}
-                className="px-4 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300 font-bold text-xl"
-              >
-                -
-              </button>
-              <div className="px-6 py-2 bg-white dark:bg-slate-800 text-center min-w-[80px]">
-                <span className="text-lg font-semibold">{hours}</span>
-                <span className="text-sm ml-1">ore</span>
+        {/* Ore - mostra solo per permessi */}
+        {type === "permesso" && (
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Icon path={mdiClockOutline} size="20" className="text-blue-500" />
+              <h3 className="text-lg font-semibold">Ore di permesso</h3>
+            </div>
+            <div className="flex items-center justify-center">
+              <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setHours(Math.max(0.5, hours - 0.5))}
+                  className="px-4 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300 font-bold text-xl"
+                >
+                  -
+                </button>
+                <div className="px-6 py-2 bg-white dark:bg-slate-800 text-center min-w-[100px]">
+                  <span className="text-lg font-semibold">{hours}</span>
+                  <span className="text-sm ml-1">{hours === 1 ? 'ora' : 'ore'}</span>
+                </div>
+                <button
+                  onClick={() => setHours(Math.min(8, hours + 0.5))}
+                  className="px-4 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300 font-bold text-xl"
+                >
+                  +
+                </button>
               </div>
-              <button
-                onClick={() => setHours(Math.min(12, hours + 1))}
-                className="px-4 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300 font-bold text-xl"
-              >
-                +
-              </button>
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+              Range: 0.5-8 ore (anche mezze giornate)
+            </p>
+          </div>
+        )}
+
+        {/* Giorni - mostra solo per ferie */}
+        {type === "ferie" && selectedDates.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Icon path={mdiCalendar} size="20" className="text-blue-500" />
+              <h3 className="text-lg font-semibold">Giorni di ferie</h3>
+            </div>
+            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+              <p className="text-lg font-semibold text-green-800 dark:text-green-200">
+                {selectedDates.length} {selectedDates.length === 1 ? "giorno" : "giorni"} di ferie
+              </p>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Selezione giorni */}
         <div className="space-y-6">
