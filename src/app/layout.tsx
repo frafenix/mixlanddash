@@ -7,6 +7,7 @@ import { StackProvider, StackTheme } from "@stackframe/stack";
 import { stackApp } from "@/lib/stack";
 import { Provider as TooltipProvider } from "@radix-ui/react-tooltip";
 import { UserTracker } from "@/components/user-tracker";
+import { LoadingProvider } from "@/components/LoadingProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,10 +38,12 @@ export default function RootLayout({
           <StackTheme>
             <StoreProvider>
               <TooltipProvider>
-                <Suspense fallback={null}>
-                  <UserTracker />
-                </Suspense>
-                {children}
+                <LoadingProvider>
+                  <Suspense fallback={null}>
+                    <UserTracker />
+                  </Suspense>
+                  {children}
+                </LoadingProvider>
               </TooltipProvider>
             </StoreProvider>
           </StackTheme>
