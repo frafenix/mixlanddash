@@ -20,11 +20,13 @@ export async function POST() {
     // Salva l'utente nel database
     const result = await saveUserToDatabase(userData);
     
-    return NextResponse.json({ 
-      success: true, 
-      isNewUser: result === true,
-      userId: user.id
-    });
+    const isNewUser = new Date().getTime() - new Date(result.createdAt).getTime() < 2000; // 2 secondi
+
+      return NextResponse.json({ 
+        success: true, 
+        isNewUser,
+        userId: user.id
+      });
   } catch (error) {
     console.error('Errore nel tracciamento utente:', error);
     return NextResponse.json({ success: false, error: 'Errore interno' }, { status: 500 });

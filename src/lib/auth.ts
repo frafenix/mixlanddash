@@ -1,6 +1,3 @@
-import { db } from './db';
-import { users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
 import type { Role } from '@/db/schema';
 
 // Mock authentication system per testing
@@ -14,24 +11,26 @@ export interface User {
 // Simulazione dell'utente corrente (in produzione verrebbe da session/JWT)
 let currentUser: User | null = null;
 
-// Funzione per simulare il login con diversi utenti
+// Funzione per simulare il login con diversi utenti SENZA accesso al DB
 export async function mockLogin(email: string): Promise<User | null> {
   try {
-    const user = await db.select().from(users).where(eq(users.email, email)).limit(1);
-    
-    if (user.length === 0) {
-      console.error('Utente non trovato:', email);
-      return null;
-    }
-
-    currentUser = {
-      id: user[0].id,
-      email: user[0].email,
-      role: user[0].role,
-      onboardingCompleted: user[0].onboardingCompleted ?? false,
+    // Mappa email -> ruolo simulato
+    const roleByEmail: Record<string, Role> = {
+      'admin@test.com': 'admin',
+      'manager@test.com': 'manager',
+      'user@test.com': 'user',
     };
 
-    console.log('🔐 Login simulato per:', currentUser);
+    const role = roleByEmail[email] ?? 'user';
+
+    currentUser = {
+      id: Math.random().toString(36).slice(2),
+      email,
+      role,
+      onboardingCompleted: true,
+    };
+
+    console.log('🔐 Login simulato (senza DB) per:', currentUser);
     return currentUser;
   } catch (error) {
     console.error('Errore durante il login mock:', error);

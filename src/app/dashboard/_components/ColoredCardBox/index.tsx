@@ -21,6 +21,7 @@ const colorVariants = {
   white: "bg-white text-gray-900 shadow-gray-200/50 dark:bg-slate-900 dark:text-white dark:shadow-slate-800/25",
   adminPill: "bg-gradient-to-br from-[#5c2d88] to-[#4a246b] text-white shadow-[#5c2d88]/25",
   userPill: "bg-gradient-to-br from-[#182951] to-[#122041] text-white shadow-[#182951]/25",
+  confirmation: "bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-emerald-500/25",
 };
 
 const hoverVariants = {
@@ -33,6 +34,7 @@ const hoverVariants = {
   white: "hover:shadow-gray-200/60 hover:shadow-xl hover:-translate-y-1 dark:hover:shadow-slate-800/40",
   adminPill: "hover:shadow-[#5c2d88]/40 hover:shadow-xl hover:-translate-y-1",
   userPill: "hover:shadow-[#182951]/40 hover:shadow-xl hover:-translate-y-1",
+  confirmation: "hover:shadow-emerald-500/40 hover:shadow-xl hover:-translate-y-1",
 };
 
 export default function ColoredCardBox({
