@@ -1,43 +1,54 @@
 import { db } from '@/lib/db';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+import { ensureFirstUserIsAdmin } from '@/lib/auth-helpers';
 
-/**
- * Salva o aggiorna un utente nel database
- * Questa funzione viene chiamata quando un utente si registra o effettua il login
- */
-export async function saveUserToDatabase(user: { id: string; primaryEmail?: string; }) {
-  if (!user?.id) return null;
-  
+export async function saveUserToDatabase(stackUser: any) {
   try {
-    // Verifica se l'utente esiste già
-    const existingUser = await db.query.users.findFirst({
-      where: eq(users.id, user.id)
+    console.log('🔄 [UserTracking] Saving user to database:', {
+      id: stackUser.id,
+      email: stackUser.primaryEmail,
     });
-    
-    if (!existingUser) {
-      // Crea nuovo record utente
-      await db.insert(users).values({
-        id: user.id,
-        email: user.primaryEmail || '',
-        createdAt: new Date(),
-        metadata: { source: 'registration' }
-      });
-      
-      console.log(`Nuovo utente salvato nel database: ${user.id}`);
-      return true;
-    } else {
-      // Aggiorna l'ultimo accesso
-      await db.update(users)
-        .set({ 
-          lastLoginAt: new Date() 
+
+    // Verifica se l'utente esiste già
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, stackUser.id))
+      .limit(1);
+
+    if (existingUser.length > 0) {
+      // Aggiorna lastLoginAt
+      await db
+        .update(users)
+        .set({
+          lastLoginAt: new Date(),
         })
-        .where(eq(users.id, user.id));
-      
-      return false;
+        .where(eq(users.id, stackUser.id));
+
+      console.log('✅ [UserTracking] Updated existing user login time');
+      return existingUser[0];
+    } else {
+      // Crea nuovo utente
+      const [newUser] = await db
+        .insert(users)
+        .values({
+          id: stackUser.id,
+          email: stackUser.primaryEmail,
+          lastLoginAt: new Date(),
+          // role: 'user' è il default nello schema
+        })
+        .returning();
+
+      console.log('✅ [UserTracking] Created new user in database');
+
+      // Verifica se questo è il primo utente e promuovilo ad admin
+      await ensureFirstUserIsAdmin(stackUser.id);
+
+      return newUser;
     }
   } catch (error) {
-    console.error('Errore nel salvataggio utente:', error);
-    return null;
+    console.error('❌ [UserTracking] Error saving user to database:', error);
+    throw error;
   }
 }

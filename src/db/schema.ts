@@ -1,10 +1,15 @@
 import { pgTable, serial, text, varchar, jsonb, boolean, timestamp, integer } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
+// Enum per i ruoli del sistema RBAC
+export const roleEnum = ['admin', 'manager', 'user'] as const;
+export type Role = typeof roleEnum[number];
+
 // Nuova tabella users per tracciare tutti gli utenti registrati
 export const users = pgTable('users', {
   id: varchar('id', { length: 255 }).primaryKey(), // Stack Auth user ID
   email: text('email').notNull(),
+  role: text('role', { enum: roleEnum }).default('user').notNull(), // RBAC role
   createdAt: timestamp('created_at').defaultNow().notNull(),
   lastLoginAt: timestamp('last_login_at'),
   onboardingStarted: boolean('onboarding_started').default(false),
@@ -14,6 +19,23 @@ export const users = pgTable('users', {
   subscriptionStatus: text('subscription_status'),
   subscriptionPlan: text('subscription_plan'),
   metadata: jsonb('metadata'),
+});
+
+// Tabella per gestire gli inviti utente
+export const invitations = pgTable('invitations', {
+  id: serial('id').primaryKey(),
+  token: varchar('token', { length: 255 }).notNull().unique(), // Token sicuro per il link
+  email: text('email').notNull(),
+  role: text('role', { enum: roleEnum }).notNull(), // Ruolo pre-assegnato
+  invitedBy: varchar('invited_by', { length: 255 }).notNull().references(() => users.id), // Admin che ha inviato l'invito
+  companyId: integer('company_id').references(() => companies.id, { onDelete: 'cascade' }), // Opzionale: invito per specifica company
+  teamId: integer('team_id').references(() => teams.id, { onDelete: 'cascade' }), // Opzionale: invito per specifico team
+  status: text('status', { enum: ['pending', 'accepted', 'expired', 'revoked'] }).default('pending').notNull(),
+  expiresAt: timestamp('expires_at').notNull(), // Scadenza invito (es. 7 giorni)
+  acceptedAt: timestamp('accepted_at'),
+  acceptedBy: varchar('accepted_by', { length: 255 }).references(() => users.id), // User che ha accettato
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export const companies = pgTable('companies', {
@@ -49,6 +71,29 @@ export const teams = pgTable('teams', {
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   companies: many(companies),
+  sentInvitations: many(invitations, { relationName: 'invitedBy' }),
+  acceptedInvitations: many(invitations, { relationName: 'acceptedBy' }),
+}));
+
+export const invitationsRelations = relations(invitations, ({ one }) => ({
+  inviter: one(users, {
+    fields: [invitations.invitedBy],
+    references: [users.id],
+    relationName: 'invitedBy',
+  }),
+  accepter: one(users, {
+    fields: [invitations.acceptedBy],
+    references: [users.id],
+    relationName: 'acceptedBy',
+  }),
+  company: one(companies, {
+    fields: [invitations.companyId],
+    references: [companies.id],
+  }),
+  team: one(teams, {
+    fields: [invitations.teamId],
+    references: [teams.id],
+  }),
 }));
 
 export const companiesRelations = relations(companies, ({ many, one }) => ({

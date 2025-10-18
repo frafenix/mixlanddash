@@ -327,24 +327,56 @@ export default function HomePageContent() {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center slide-up-delay-2">
-            <button
-              onClick={handleStarterPlanClick}
-              className="group relative bg-blue-600 text-white px-10 py-4 rounded-2xl text-lg font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 pulse-glow"
-            >
-              <span className="relative z-10">Inizia con Starter - €9,99/mese</span>
-              <div className="absolute inset-0 bg-blue-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </button>
-            <a
-              href="#features"
-              className="group bg-white/80 backdrop-blur-sm border-2 border-gray-200 text-gray-700 px-10 py-4 rounded-2xl text-lg font-semibold hover:bg-white hover:border-blue-300 hover:text-blue-600 transition-all duration-300 transform hover:scale-105 hover:shadow-xl dark:bg-slate-800/80 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-700 dark:hover:border-blue-500 dark:hover:text-blue-400"
-            >
-              <span className="flex items-center justify-center gap-2">
-                Scopri di più
-                <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </span>
-            </a>
+            {user ? (
+              // Utente autenticato - mostra pulsante dashboard
+              <>
+                <button
+                  onClick={() => router.push('/dashboard')}
+                  className="group relative bg-gradient-to-r from-blue-600 to-blue-700 text-white px-12 py-4 rounded-2xl text-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 pulse-glow"
+                >
+                  <span className="flex items-center justify-center gap-3 relative z-10">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Accedi alla Dashboard
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-800 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+                <a
+                  href="#features"
+                  className="group bg-white/80 backdrop-blur-sm border-2 border-gray-200 text-gray-700 px-10 py-4 rounded-2xl text-lg font-semibold hover:bg-white hover:border-blue-300 hover:text-blue-600 transition-all duration-300 transform hover:scale-105 hover:shadow-xl dark:bg-slate-800/80 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-700 dark:hover:border-blue-500 dark:hover:text-blue-400"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    Scopri le funzionalità
+                    <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </span>
+                </a>
+              </>
+            ) : (
+              // Utente non autenticato - mostra pulsanti di acquisto
+              <>
+                <button
+                  onClick={handleStarterPlanClick}
+                  className="group relative bg-blue-600 text-white px-10 py-4 rounded-2xl text-lg font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 pulse-glow"
+                >
+                  <span className="relative z-10">Inizia con Starter - €9,99/mese</span>
+                  <div className="absolute inset-0 bg-blue-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+                <a
+                  href="#features"
+                  className="group bg-white/80 backdrop-blur-sm border-2 border-gray-200 text-gray-700 px-10 py-4 rounded-2xl text-lg font-semibold hover:bg-white hover:border-blue-300 hover:text-blue-600 transition-all duration-300 transform hover:scale-105 hover:shadow-xl dark:bg-slate-800/80 dark:border-slate-600 dark:text-gray-300 dark:hover:bg-slate-700 dark:hover:border-blue-500 dark:hover:text-blue-400"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    Scopri di più
+                    <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </span>
+                </a>
+              </>
+            )}
           </div>
 
           {/* Social proof */}
