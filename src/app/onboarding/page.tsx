@@ -12,6 +12,7 @@ import SectionTitleLineWithButton from "../_components/Section/TitleLineWithButt
 import NotificationBar from "../_components/NotificationBar";
 import Button from "../_components/Button";
 import PillTag from "../_components/PillTag";
+import ClientOnlyWrapper from "@/components/ClientOnlyWrapper";
 
 interface OnboardingData {
   companyName: string;
@@ -22,10 +23,10 @@ interface OnboardingData {
 }
 
 function OnboardingContent() {
-  const user = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
   const paymentSuccess = searchParams.get("payment") === "success";
+  const user = useUser();
 
   const [formData, setFormData] = useState<OnboardingData>({
     companyName: "",
@@ -34,6 +35,7 @@ function OnboardingContent() {
     locationAddress: "",
     locationCity: "",
   });
+  const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -41,13 +43,6 @@ function OnboardingContent() {
       console.log("Payment completed successfully!");
     }
   }, [paymentSuccess]);
-
-  useEffect(() => {
-    if (!user) {
-      router.push("/login");
-      return;
-    }
-  }, [user, router]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -59,35 +54,64 @@ function OnboardingContent() {
     }));
   };
 
+  // Rimuovo la prima definizione di handleSubmit che usava setSubmitting/setError
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!user) {
-      router.push("/login");
+      router.push('/handler/sign-in');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/onboarding", {
-        method: "POST",
+      const payload = {
+        companyName: formData.companyName,
+        companyDescription: formData.companyDescription,
+        locations: [
+          {
+            name: formData.locationName || formData.locationCity, // Usa locationCity come fallback
+            address: formData.locationAddress,
+          },
+        ],
+        teams: [
+          {
+            name: 'Team Principale',
+            description: 'Team principale creato automaticamente',
+          },
+        ],
+      };
+
+      const response = await fetch('/api/onboarding', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
-        router.push("/dashboard");
+        router.push('/dashboard');
       } else {
-        const errorData = await response.json();
-        console.error("Errore durante l'onboarding:", errorData);
-        alert("Errore durante il salvataggio. Riprova.");
+        let errorMessage = "Errore durante l'onboarding. Riprova.";
+        try {
+          const errorData = await response.json();
+          // Utilizziamo i dati di errore senza log di debug
+          if (errorData && errorData.error) {
+            errorMessage = errorData.error;
+          } else if (errorData && errorData.details && errorData.details.length > 0) {
+            errorMessage = errorData.details[0].message || errorMessage;
+          }
+        } catch (jsonError) {
+          // Errore silenzioso nel parsing JSON
+          errorMessage = `Errore del server (${response.status}). Riprova.`;
+        }
+        setError(errorMessage);
       }
     } catch (error) {
-      console.error("Errore di rete:", error);
-      alert("Errore di connessione. Riprova.");
+      console.error('Errore di rete:', error);
+      setError('Errore di connessione. Riprova.');
     } finally {
       setIsSubmitting(false);
     }
@@ -102,7 +126,7 @@ function OnboardingContent() {
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 animate-spin" style={{ animationDuration: '1.5s' }}></div>
               <div className="absolute inset-2 rounded-full bg-white dark:bg-slate-900"></div>
             </div>
-            <p className="text-lg font-medium text-gray-700 dark:text-slate-300">Caricamento...</p>
+            <p className="text-lg font-medium text-gray-700 dark:text-slate-300">Caricamento autenticazione...</p>
           </div>
         </div>
       </SectionMain>
@@ -119,6 +143,12 @@ function OnboardingContent() {
         {paymentSuccess && (
           <NotificationBar color="success" icon={mdiCheck}>
             Pagamento completato con successo! Ora completa la configurazione per iniziare.
+          </NotificationBar>
+        )}
+        
+        {error && (
+          <NotificationBar color="danger" icon="alert-circle">
+            {error}
           </NotificationBar>
         )}
 
@@ -257,24 +287,17 @@ function OnboardingContent() {
 
 export default function OnboardingPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen">
-          <SectionMain>
-            <div className="flex items-center justify-center py-24">
-              <div className="text-center">
-                <div className="relative w-16 h-16 mx-auto mb-6">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 animate-spin" style={{ animationDuration: "1.5s" }}></div>
-                  <div className="absolute inset-2 rounded-full bg-white dark:bg-slate-900"></div>
-                </div>
-                <p className="text-lg font-medium text-gray-700 dark:text-slate-300">Caricamento...</p>
-              </div>
-            </div>
-          </SectionMain>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-800">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">Caricamento...</p>
         </div>
-      }
-    >
-      <OnboardingContent />
+      </div>
+    }>
+      <ClientOnlyWrapper>
+        <OnboardingContent />
+      </ClientOnlyWrapper>
     </Suspense>
   );
 }

@@ -17,7 +17,7 @@ type Props = {
 const FormField = ({ children, ...props }: Props) => {
   const fieldData: FormFieldData = {
     className: [
-      "px-3 py-2 max-w-full border-gray-700 rounded-sm w-full dark:placeholder-gray-400",
+      "px-3 py-2 max-w-full border-blue-700 rounded-lg w-full dark:placeholder-gray-400",
       "focus:ring-3 focus:ring-blue-600 focus:border-blue-600 focus:outline-hidden",
       props.hasTextareaHeight ? "h-24" : "h-12",
       props.isBorderless ? "border-0" : "border",

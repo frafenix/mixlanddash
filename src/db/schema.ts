@@ -1,6 +1,21 @@
 import { pgTable, serial, text, varchar, jsonb, boolean, timestamp, integer } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
+// Nuova tabella users per tracciare tutti gli utenti registrati
+export const users = pgTable('users', {
+  id: varchar('id', { length: 255 }).primaryKey(), // Stack Auth user ID
+  email: text('email').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  lastLoginAt: timestamp('last_login_at'),
+  onboardingStarted: boolean('onboarding_started').default(false),
+  onboardingCompleted: boolean('onboarding_completed').default(false),
+  stripeCustomerId: text('stripe_customer_id'),
+  stripeSubscriptionId: text('stripe_subscription_id'),
+  subscriptionStatus: text('subscription_status'),
+  subscriptionPlan: text('subscription_plan'),
+  metadata: jsonb('metadata'),
+});
+
 export const companies = pgTable('companies', {
   id: serial('id').primaryKey(),
   userId: varchar('user_id', { length: 255 }).notNull(), // Reference to Stack Auth user ID
@@ -32,9 +47,17 @@ export const teams = pgTable('teams', {
 });
 
 // Relations
-export const companiesRelations = relations(companies, ({ many }) => ({
+export const usersRelations = relations(users, ({ many }) => ({
+  companies: many(companies),
+}));
+
+export const companiesRelations = relations(companies, ({ many, one }) => ({
   locations: many(locations),
   teams: many(teams),
+  user: one(users, {
+    fields: [companies.userId],
+    references: [users.id],
+  }),
 }));
 
 export const locationsRelations = relations(locations, ({ one }) => ({

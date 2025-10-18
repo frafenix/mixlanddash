@@ -28,6 +28,8 @@ export default function HomePageContent() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true); // Inizia con loading a true
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [isCheckingPendingPurchase, setIsCheckingPendingPurchase] = useState(false);
+  const [hasCheckedPendingPurchase, setHasCheckedPendingPurchase] = useState(false);
   const dispatch = useAppDispatch();
   const darkMode = useAppSelector((state) => state.darkMode.isEnabled);
 
@@ -57,20 +59,28 @@ export default function HomePageContent() {
     setIsLoading(false);
     
     // Gestisci solo il caso di acquisto pendente - il redirect onboarding è gestito dalla middleware
-    if (user && !isProcessingPayment) {
+    if (user && !isProcessingPayment && !isCheckingPendingPurchase && !hasCheckedPendingPurchase) {
       const pendingPurchase = localStorage.getItem('pendingPurchase');
       console.log("[HomePage] Checking pending purchase:", { pendingPurchase });
       if (pendingPurchase === 'starter') {
         console.log('🟡 [HomePage] User registered, starting checkout for starter plan');
+        setIsCheckingPendingPurchase(true);
         localStorage.removeItem('pendingPurchase');
         handleStarterPlanClick();
       } else if (pendingPurchase === 'pro') {
         console.log('🟡 [HomePage] User registered, starting checkout for pro plan');
+        setIsCheckingPendingPurchase(true);
         localStorage.removeItem('pendingPurchase');
         handleProPlanClick();
+      } else {
+        // No pending purchase, mark as checked
+        setHasCheckedPendingPurchase(true);
       }
+    } else if (user === null && !hasCheckedPendingPurchase) {
+      // User is not authenticated, mark as checked
+      setHasCheckedPendingPurchase(true);
     }
-  }, [user, isProcessingPayment]);
+  }, [user, isProcessingPayment, isCheckingPendingPurchase, hasCheckedPendingPurchase]);
 
   const handleStarterPlanClick = async () => {
     console.log('🔵 handleStarterPlanClick called');
@@ -115,6 +125,7 @@ export default function HomePageContent() {
       setIsProcessingPayment(false);
     } finally {
       setIsLoading(false);
+      setIsCheckingPendingPurchase(false);
     }
   };
 
@@ -144,16 +155,20 @@ export default function HomePageContent() {
     } finally {
       setIsLoading(false);
       setIsProcessingPayment(false);
+      setIsCheckingPendingPurchase(false);
+      setHasCheckedPendingPurchase(true);
     }
   };
 
-  if (user === undefined) {
-    // Ancora in caricamento
+  // Show loading spinner while checking for pending purchases or processing payment
+  if (user === undefined || isProcessingPayment || isCheckingPendingPurchase || !hasCheckedPendingPurchase) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-800">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">Caricamento...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">
+            {isCheckingPendingPurchase ? 'Reindirizzamento al pagamento...' : 'Caricamento...'}
+          </p>
         </div>
       </div>
     );

@@ -33,49 +33,47 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = onboardingSchema.parse(body)
 
-    // Inizia transazione per salvare tutti i dati
-    const result = await db.transaction(async (tx) => {
-      // 1. Crea l'azienda
-      const [company] = await tx.insert(companies).values({
-        name: validatedData.companyName,
-        otherInfo: validatedData.companyDescription ? { description: validatedData.companyDescription } : null,
-        userId: user.id,
-        onboardingCompleted: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }).returning()
+    // Esegue le operazioni in sequenza senza transazione
+    // 1. Crea l'azienda
+    const [company] = await db.insert(companies).values({
+      name: validatedData.companyName,
+      otherInfo: validatedData.companyDescription ? { description: validatedData.companyDescription } : null,
+      userId: user.id,
+      onboardingCompleted: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }).returning()
 
-      // 2. Crea le sedi
-      const locationResults = await Promise.all(
-        validatedData.locations.map(location =>
-          tx.insert(locations).values({
-            address: location.address,
-            city: location.name, // Using name as city for now
-            companyId: company.id,
-            createdAt: new Date(),
-          }).returning()
-        )
+    // 2. Crea le sedi
+    const locationResults = await Promise.all(
+      validatedData.locations.map(location =>
+        db.insert(locations).values({
+          address: location.address,
+          city: location.address.split(',').pop()?.trim() || '', // Estrae la città dall'indirizzo
+          companyId: company.id,
+          createdAt: new Date(),
+        }).returning()
       )
+    )
 
-      // 3. Crea i team
-      const teamResults = await Promise.all(
-        validatedData.teams.map(team =>
-          tx.insert(teams).values({
-            name: team.name,
-            description: team.description || null,
-            companyId: company.id,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          }).returning()
-        )
+    // 3. Crea i team
+    const teamResults = await Promise.all(
+      validatedData.teams.map(team =>
+        db.insert(teams).values({
+          name: team.name,
+          description: team.description || null,
+          companyId: company.id,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }).returning()
       )
+    )
 
-      return {
-        company,
-        locations: locationResults.flat(),
-        teams: teamResults.flat(),
-      }
-    })
+    const result = {
+      company,
+      locations: locationResults.flat(),
+      teams: teamResults.flat(),
+    }
 
     return NextResponse.json({
       success: true,
@@ -95,9 +93,24 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+    
+    // Gestione errori di database
+    if (error instanceof Error) {
+      const errorMessage = error.message || 'Errore interno del server';
+      return NextResponse.json(
+        { 
+          error: errorMessage,
+          details: { message: errorMessage }
+        },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json(
-      { error: 'Errore interno del server' },
+      { 
+        error: 'Errore interno del server',
+        details: { message: 'Si è verificato un errore imprevisto durante l\'onboarding' }
+      },
       { status: 500 }
     )
   }

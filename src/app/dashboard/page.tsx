@@ -20,12 +20,41 @@ import { getPageTitle } from "../_lib/config";
 import { clients, transactions } from "./_lib/sampleData";
 import ChartLineSampleComponentBlock from "./_components/ChartLineSample/ComponentBlock";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { stackServerApp } from "@/lib/stack";
+import { db } from "@/lib/db";
+import { companies } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export const metadata: Metadata = {
   title: getPageTitle("Dashboard"),
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  // Guard: richiede autenticazione e onboarding completato
+  const user = await stackServerApp.getUser();
+  if (!user) {
+    redirect("/handler/sign-in");
+  }
+
+  let isOnboardingCompleted = false;
+  try {
+    const userCompany = await db.query.companies.findFirst({
+      where: eq(companies.userId, user.id),
+      columns: {
+        onboardingCompleted: true,
+      },
+    });
+    isOnboardingCompleted = !!userCompany?.onboardingCompleted;
+  } catch (error) {
+    console.error('Errore controllo onboarding in dashboard:', error);
+    isOnboardingCompleted = false;
+  }
+
+  if (!isOnboardingCompleted) {
+    redirect("/onboarding");
+  }
+
   const clientsListed = clients.slice(0, 4);
 
   return (
@@ -35,15 +64,24 @@ export default function DashboardPage() {
         title="Overview"
         main
       >
-        <Button
-          href="https://github.com/justboil/admin-one-react-tailwind"
-          target="_blank"
-          icon={mdiGithub}
-          label="Star on GitHub"
-          color="contrast"
-          roundedFull
-          small
-        />
+        <div className="flex gap-2">
+          <Button
+            href="/"
+            label="Home"
+            color="contrast"
+            roundedFull
+            small
+          />
+          <Button
+            href="https://github.com/justboil/admin-one-react-tailwind"
+            target="_blank"
+            icon={mdiGithub}
+            label="Star on GitHub"
+            color="contrast"
+            roundedFull
+            small
+          />
+        </div>
       </SectionTitleLineWithButton>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">

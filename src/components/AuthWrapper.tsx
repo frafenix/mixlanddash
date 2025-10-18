@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@stackframe/stack";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 interface AuthWrapperProps {
   children: React.ReactNode;
@@ -9,25 +9,22 @@ interface AuthWrapperProps {
 }
 
 export default function AuthWrapper({ children, fallback }: AuthWrapperProps) {
-  const [mounted, setMounted] = useState(false);
-  const [isReady, setIsReady] = useState(false);
+  const user = useUser();
 
   useEffect(() => {
-    setMounted(true);
-    // Aggiungi un piccolo delay per permettere a Stack Auth di inizializzarsi
-    const timer = setTimeout(() => {
-      setIsReady(true);
-    }, 100);
+    console.log("[AuthWrapper] User state:", {
+      user: user ? "authenticated" : "not authenticated",
+      userId: user?.id,
+      status: user === undefined ? "loading" : user ? "authenticated" : "not-authenticated"
+    });
+  }, [user]);
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (!mounted || !isReady) {
+  if (user === undefined) {
     return fallback || (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-800">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">Inizializzazione...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">Inizializzazione autenticazione...</p>
         </div>
       </div>
     );
