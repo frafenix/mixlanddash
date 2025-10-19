@@ -1,52 +1,53 @@
 "use client";
 
-import { useState } from "react";
-import { ColorButtonKey } from "../../_interfaces";
-import Button from "../Button";
+import { useState, ChangeEvent } from "react";
+import Icon from "../Icon";
 
-type Props = {
-  label?: string;
-  icon?: string;
-  accept?: string;
-  color: ColorButtonKey;
-  isRoundIcon?: boolean;
+export type Props = {
+  label: string;
+  help: string;
+  icon: string;
+  onFileChange: (files: File[]) => void;
 };
 
-const FormFilePicker = ({ label, icon, accept, color, isRoundIcon }: Props) => {
-  const [file, setFile] = useState<File | null>(null);
+const FormFilePicker = ({ label, help, icon, onFileChange }: Props) => {
+  const [isHovered, setIsHovered] = useState(false);
 
-  const handleFileChange = (event) => {
-    setFile(event.currentTarget.files[0]);
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files ? Array.from(event.target.files) : [];
+    onFileChange(files);
   };
 
-  const showFilename = !isRoundIcon && file;
-
   return (
-    <div className="flex items-stretch justify-start relative">
-      <label className="inline-flex">
-        <Button
-          className={`${isRoundIcon ? "w-12 h-12" : ""} ${showFilename ? "rounded-r-none" : ""}`}
-          iconSize={isRoundIcon ? 24 : undefined}
-          label={isRoundIcon ? null : label}
-          icon={icon}
-          color={color}
-          roundedFull={isRoundIcon}
-          asAnchor
+    <div
+      className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+        isHovered
+          ? "border-blue-500 bg-blue-50 dark:bg-blue-900/50"
+          : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+      }`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <input
+        type="file"
+        multiple
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        onChange={handleFileChange}
+        accept="image/png, image/jpeg, image/gif, application/pdf"
+      />
+      <div className="flex flex-col items-center justify-center space-y-2">
+        <Icon
+          path={icon}
+          size="48"
+          className={`transition-colors ${
+            isHovered ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-gray-500"
+          }`}
         />
-        <input
-          type="file"
-          className="absolute top-0 left-0 w-full h-full opacity-0 outline-hidden cursor-pointer -z-1"
-          onChange={handleFileChange}
-          accept={accept}
-        />
-      </label>
-      {showFilename && (
-        <div className="px-4 py-2 max-w-full grow-0 overflow-x-hidden bg-gray-100 dark:bg-slate-800 border-gray-200 dark:border-slate-700 border rounded-r">
-          <span className="text-ellipsis max-w-full line-clamp-1">
-            {file.name}
-          </span>
-        </div>
-      )}
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {label}
+        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">{help}</p>
+      </div>
     </div>
   );
 };

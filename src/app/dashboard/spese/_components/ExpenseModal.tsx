@@ -5,9 +5,18 @@ import Button from "../../../_components/Button";
 import CardBox from "../../../_components/CardBox";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import FormFilePicker, {
-  Props,
+  Props as FormFilePickerProps,
 } from "../../../_components/FormField/FilePicker";
-import { mdiClose, mdiCashMultiple, mdiCalendar, mdiCurrencyEur, mdiFileDocument, mdiMapMarker, mdiAccount, mdiFolder } from "@mdi/js";
+import {
+  mdiClose,
+  mdiCashMultiple,
+  mdiCalendar,
+  mdiCurrencyEur,
+  mdiFileDocument,
+  mdiMapMarker,
+  mdiAccount,
+  mdiFolder,
+} from "@mdi/js";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
 
@@ -264,7 +273,6 @@ export default function ExpenseModal({ isActive, onClose, onSubmit }: ExpenseMod
                     Allegati (scontrini, fatture) *
                   </label>
                   <FormFilePicker
-                    name="attachments"
                     label="Trascina i file qui o clicca per selezionarli"
                     help="PDF, JPG, PNG, GIF (max 5MB per file)"
                     icon={mdiFileDocument}
