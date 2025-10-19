@@ -200,6 +200,8 @@ export default function SpesePage() {
   const [filterStatus, setFilterStatus] = useState<ExpenseStatus | "all">("all");
   const [filterType, setFilterType] = useState<ExpenseType | "all">("all");
   const [isNewExpenseModalActive, setIsNewExpenseModalActive] = useState(false);
+  const [isDetailModalActive, setIsDetailModalActive] = useState(false);
+  const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   const [notification, setNotification] = useState<{
     message: string;
     color: ColorKey;
@@ -336,18 +338,29 @@ export default function SpesePage() {
     }
   };
 
+  const handleViewDetails = (expense: Expense) => {
+    setSelectedExpense(expense);
+    setIsDetailModalActive(true);
+  };
+
+  const handleDownloadAttachments = (attachments: string[]) => {
+    alert(`Simulazione di download di: ${attachments.join(', ')}`);
+  };
+
   return (
     <>
       <SectionTitleLineWithButton
         icon={mdiCashMultiple}
         title="Note Spese e Trasferte"
         main
+        className="mb-6"
       >
         <Button
           icon={mdiPlus}
           label="Nuova nota spese"
           color="success"
           onClick={handleNewExpense}
+          className="mt-4 sm:mr-4"
         />
       </SectionTitleLineWithButton>
 
@@ -368,78 +381,89 @@ export default function SpesePage() {
         />
       )}
 
+      {isDetailModalActive && selectedExpense && (
+        <CardBox
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={() => setIsDetailModalActive(false)}
+        >
+          <CardBox
+            className="relative w-full max-w-2xl bg-white dark:bg-gray-800 rounded-lg shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <SectionTitleLineWithButton
+              icon={mdiFileDocument}
+              title="Dettaglio Nota Spese"
+              main
+            >
+              <Button
+                icon={mdiClose}
+                color="whiteDark"
+                onClick={() => setIsDetailModalActive(false)}
+                small
+              />
+            </SectionTitleLineWithButton>
+            <div className="p-6">
+              <p><strong>Utente:</strong> {selectedExpense.userName}</p>
+              <p><strong>Tipo:</strong> {getTypeLabel(selectedExpense.type)}</p>
+              <p><strong>Data:</strong> {format(new Date(selectedExpense.date), "dd/MM/yyyy", { locale: it })}</p>
+              <p><strong>Importo:</strong> {selectedExpense.currency} {selectedExpense.amount.toFixed(2)}</p>
+              <p><strong>Descrizione:</strong> {selectedExpense.description}</p>
+              <p><strong>Stato:</strong> {getStatusLabel(selectedExpense.status)}</p>
+              {selectedExpense.project && <p><strong>Progetto:</strong> {selectedExpense.project}</p>}
+              {selectedExpense.client && <p><strong>Cliente:</strong> {selectedExpense.client}</p>}
+              {selectedExpense.rejectionReason && <p><strong>Motivo Rifiuto:</strong> {selectedExpense.rejectionReason}</p>}
+              {selectedExpense.approvedBy && <p><strong>Approvato da:</strong> {selectedExpense.approvedBy}</p>}
+              {selectedExpense.attachments && selectedExpense.attachments.length > 0 && (
+                <div>
+                  <strong>Allegati:</strong>
+                  <ul>
+                    {selectedExpense.attachments.map((file, index) => (
+                      <li key={index}>{file}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </CardBox>
+        </CardBox>
+      )}
+
       <SectionMain>
         {/* Filtri rapidi */}
         <CardBox className="mb-6">
-          <div className="flex flex-wrap gap-2 mb-4">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">
-              Filtra per stato:
-            </span>
-            <Button
-              label="Tutte"
-              color={filterStatus === "all" ? "info" : "lightDark"}
-              small
-              onClick={() => handleFilterChange("all")}
-            />
-            <Button
-              label="In attesa"
-              color={filterStatus === "pending" ? "warning" : "lightDark"}
-              small
-              onClick={() => handleFilterChange("pending")}
-            />
-            <Button
-              label="Approvate"
-              color={filterStatus === "approved" ? "success" : "lightDark"}
-              small
-              onClick={() => handleFilterChange("approved")}
-            />
-            <Button
-              label="Rifiutate"
-              color={filterStatus === "rejected" ? "danger" : "lightDark"}
-              small
-              onClick={() => handleFilterChange("rejected")}
-            />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">
-              Filtra per tipo:
-            </span>
-            <Button
-              label="Tutti"
-              color={filterType === "all" ? "info" : "lightDark"}
-              small
-              onClick={() => handleTypeFilterChange("all")}
-            />
-            <Button
-              label="Trasferta"
-              color={filterType === "trasferta" ? "info" : "lightDark"}
-              small
-              onClick={() => handleTypeFilterChange("trasferta")}
-            />
-            <Button
-              label="Vitto"
-              color={filterType === "vitto" ? "success" : "lightDark"}
-              small
-              onClick={() => handleTypeFilterChange("vitto")}
-            />
-            <Button
-              label="Alloggio"
-              color={filterType === "alloggio" ? "warning" : "lightDark"}
-              small
-              onClick={() => handleTypeFilterChange("alloggio")}
-            />
-            <Button
-              label="Viaggio"
-              color={filterType === "viaggio" ? "danger" : "lightDark"}
-              small
-              onClick={() => handleTypeFilterChange("viaggio")}
-            />
-            <Button
-              label="Altro"
-              color={filterType === "altro" ? "light" : "lightDark"}
-              small
-              onClick={() => handleTypeFilterChange("altro")}
-            />
+          <div className="flex gap-4">
+            <div className="w-1/2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Tipo filtro
+              </label>
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value as ExpenseType | "all")}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              >
+                <option value="all">Tutti</option>
+                <option value="trasferta">Trasferta</option>
+                <option value="vitto">Vitto</option>
+                <option value="alloggio">Alloggio</option>
+                <option value="viaggio">Viaggio</option>
+                <option value="altro">Altro</option>
+              </select>
+            </div>
+            <div className="w-1/2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Stato filtro
+              </label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value as ExpenseStatus | "all")}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              >
+                <option value="all">Tutti</option>
+                <option value="pending">In attesa</option>
+                <option value="approved">Approvate</option>
+                <option value="rejected">Rifiutate</option>
+              </select>
+            </div>
           </div>
         </CardBox>
 
@@ -692,7 +716,7 @@ export default function SpesePage() {
                           color="info"
                           small
                           outline
-                          onClick={() => {/* TODO: Implementa download allegati */}}
+                          onClick={() => handleDownloadAttachments(expense.attachments!)}
                         />
                       ) : (
                         <span className="text-gray-400 text-sm">Nessuno</span>
@@ -704,7 +728,7 @@ export default function SpesePage() {
                           icon={mdiEye}
                           color="info"
                           small
-                          onClick={() => {/* TODO: Implementa visualizzazione dettagli */}}
+                          onClick={() => handleViewDetails(expense)}
                         />
                         <RoleBasedAccess allowedRoles={['manager', 'admin']}>
                           {expense.status === "pending" && (

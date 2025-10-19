@@ -193,14 +193,36 @@ export default function FeriePage() {
         icon={mdiBeach}
         title="Richiesta Ferie e Permessi"
         main
+        className="mb-6"
       >
         <Button
           icon={mdiPlus}
           label="Nuova richiesta"
           color="success"
           onClick={handleNewRequest}
+          className="mt-4 sm:mr-4"
         />
       </SectionTitleLineWithButton>
+
+      <CardBox className="mb-6">
+        <div className="flex flex-wrap gap-4 mb-4">
+          <div className="w-full md:w-1/2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Stato filtro
+            </label>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value as LeaveRequestStatus | "all")}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            >
+              <option value="all">Tutti</option>
+              <option value="pending">In attesa</option>
+              <option value="approved">Approvate</option>
+              <option value="rejected">Rifiutate</option>
+            </select>
+          </div>
+        </div>
+      </CardBox>
 
       {notification && (
         <NotificationBar
@@ -231,39 +253,6 @@ export default function FeriePage() {
             {notification.message}
           </NotificationBar>
         )}
-
-        {/* Filtri rapidi */}
-        <CardBox className="mb-6">
-          <div className="flex flex-wrap gap-2 mb-4">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">
-              Filtra per stato:
-            </span>
-            <Button
-              label="Tutte"
-              color={filterStatus === "all" ? "info" : "lightDark"}
-              small
-              onClick={() => handleFilterChange("all")}
-            />
-            <Button
-              label="In attesa"
-              color={filterStatus === "pending" ? "warning" : "lightDark"}
-              small
-              onClick={() => handleFilterChange("pending")}
-            />
-            <Button
-              label="Approvate"
-              color={filterStatus === "approved" ? "success" : "lightDark"}
-              small
-              onClick={() => handleFilterChange("approved")}
-            />
-            <Button
-              label="Rifiutate"
-              color={filterStatus === "rejected" ? "danger" : "lightDark"}
-              small
-              onClick={() => handleFilterChange("rejected")}
-            />
-          </div>
-        </CardBox>
 
         {/* Saldo giorni disponibili */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">

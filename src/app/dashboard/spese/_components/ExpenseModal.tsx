@@ -45,8 +45,8 @@ export default function ExpenseModal({ isActive, onClose, onSubmit }: ExpenseMod
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!date || !amount || !description) {
-      alert("Compila tutti i campi obbligatori");
+    if (!date || !amount || !description || attachments.length === 0) {
+      alert("Compila tutti i campi obbligatori, inclusi gli allegati");
       return;
     }
 
