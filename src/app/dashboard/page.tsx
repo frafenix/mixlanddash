@@ -24,6 +24,9 @@ import { getPageTitle } from "../_lib/config";
 import { clients, transactions } from "./_lib/sampleData";
 import ChartLineSampleComponentBlock from "./_components/ChartLineSample/ComponentBlock";
 import ColoredCardBox from "./_components/ColoredCardBox";
+import UserDashboard from "./_components/UserDashboard";
+import ManagerDashboard from "./_components/ManagerDashboard";
+import AdminDashboard from "./_components/AdminDashboard";
 import { UserSwitcher } from "@/components/UserSwitcher";
 import { RoleBasedAccess } from "@/components/RoleBasedAccess";
 import { Metadata } from "next";
@@ -80,72 +83,20 @@ export default async function DashboardPage() {
       >
       </SectionTitleLineWithButton>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <ColoredCardBox
-          gradient={false}
-          className="animate-fade-in-up stagger-1 bg-[#26b56b] text-white"
-        >
-          <p className="text-lg font-semibold">
-            <Icon path={mdiAccountMultiple} size={1} className="inline-block mr-2" />
-            Dipendenti attivi
-          </p>
-          <p className="text-3xl font-bold mt-2">512</p>
-        </ColoredCardBox>
+      {/* Dashboard specifica per User */}
+      <RoleBasedAccess allowedRoles={['user']}>
+        <UserDashboard />
+      </RoleBasedAccess>
 
-        <ColoredCardBox
-          gradient={false}
-          className="animate-fade-in-up stagger-2 bg-[#2563eb] text-white"
-        >
-          <p className="text-lg font-semibold">
-            <Icon path={mdiCalendarClock} size={1} className="inline-block mr-2" />
-            Ferie pendenti
-          </p>
-          <p className="text-3xl font-bold mt-2">128</p>
-        </ColoredCardBox>
+      {/* Dashboard specifica per Manager */}
+      <RoleBasedAccess allowedRoles={['manager']}>
+        <ManagerDashboard />
+      </RoleBasedAccess>
 
-        <ColoredCardBox
-          gradient={false}
-          className="animate-fade-in-up stagger-3 bg-[#182951] text-white"
-        >
-          <p className="text-lg font-semibold">
-            <Icon path={mdiChartTimelineVariant} size={1} className="inline-block mr-2" />
-            Ore straordinario
-          </p>
-          <p className="text-3xl font-bold mt-2">256</p>
-        </ColoredCardBox>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div className="flex flex-col justify-between">
-          {transactions.map((transaction: Transaction) => (
-            <CardBoxTransaction
-              key={transaction.id}
-              transaction={transaction}
-            />
-          ))}
-        </div>
-        <div className="flex flex-col justify-between">
-          {clientsListed.map((client: Client) => (
-            <CardBoxClient key={client.id} client={client} />
-          ))}
-        </div>
-      </div>
-
-      <div className="my-6">
-        <SectionBannerStarOnGitHub />
-      </div>
-
-      <ChartLineSampleComponentBlock />
-
-      <SectionTitleLineWithButton icon={mdiAccountMultiple} title="Clients" />
-
-      <NotificationBar color="info" icon={mdiMonitorCellphone}>
-        <b>Responsive table.</b> Collapses on mobile
-      </NotificationBar>
-
-      <CardBox hasTable>
-        <TableSampleClients clients={clients} />
-      </CardBox>
+      {/* Dashboard per Admin */}
+      <RoleBasedAccess allowedRoles={['admin']}>
+        <AdminDashboard />
+      </RoleBasedAccess>
 
       {/* Sezioni basate sui ruoli */}
       <RoleBasedAccess allowedRoles={['admin', 'manager']}>

@@ -474,17 +474,19 @@ export default function SpesePage() {
             color="success"
             gradient
             className="animate-fade-in-up stagger-1"
+            isHoverable
+            onClick={() => console.log('Approvate clicked')}
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mr-3">
+                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                   <Icon path={mdiCheckCircle} className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-white">
                     Approvate
                   </h3>
-                  <p className="text-sm text-green-200">
+                  <p className="text-sm text-white/80">
                     Totale spese
                   </p>
                 </div>
@@ -500,17 +502,19 @@ export default function SpesePage() {
             color="warning"
             gradient
             className="animate-fade-in-up stagger-2"
+            isHoverable
+            onClick={() => console.log('In Attesa clicked')}
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mr-3">
+                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                   <Icon path={mdiClockOutline} className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-white">
                     In Attesa
                   </h3>
-                  <p className="text-sm text-yellow-200">
+                  <p className="text-sm text-white/80">
                     Da approvare
                   </p>
                 </div>
@@ -526,17 +530,19 @@ export default function SpesePage() {
             color="danger"
             gradient
             className="animate-fade-in-up stagger-3"
+            isHoverable
+            onClick={() => console.log('Rifiutate clicked')}
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center mr-3">
+                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                   <Icon path={mdiCancel} className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-white">
                     Rifiutate
                   </h3>
-                  <p className="text-sm text-red-200">
+                  <p className="text-sm text-white/80">
                     Non approvate
                   </p>
                 </div>
@@ -552,17 +558,19 @@ export default function SpesePage() {
             color="info"
             gradient
             className="animate-fade-in-up stagger-4"
+            isHoverable
+            onClick={() => console.log('Totale Mese clicked')}
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                   <Icon path={mdiTrendingUp} className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-white">
                     Totale Mese
                   </h3>
-                  <p className="text-sm text-blue-200">
+                  <p className="text-sm text-white/80">
                     Tutte le spese
                   </p>
                 </div>

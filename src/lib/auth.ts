@@ -8,8 +8,41 @@ export interface User {
   onboardingCompleted: boolean;
 }
 
+// Chiave per localStorage
+const AUTH_STORAGE_KEY = 'mock_auth_user';
+
 // Simulazione dell'utente corrente (in produzione verrebbe da session/JWT)
 let currentUser: User | null = null;
+
+// Funzione per caricare l'utente da localStorage
+function loadUserFromStorage(): User | null {
+  if (typeof window === 'undefined') return null;
+  
+  try {
+    const stored = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.error('Errore nel caricamento utente da localStorage:', error);
+  }
+  return null;
+}
+
+// Funzione per salvare l'utente in localStorage
+function saveUserToStorage(user: User | null): void {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    if (user) {
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+    }
+  } catch (error) {
+    console.error('Errore nel salvataggio utente in localStorage:', error);
+  }
+}
 
 // Funzione per simulare il login con diversi utenti SENZA accesso al DB
 export async function mockLogin(email: string): Promise<User | null> {
@@ -30,6 +63,9 @@ export async function mockLogin(email: string): Promise<User | null> {
       onboardingCompleted: true,
     };
 
+    // Salva l'utente in localStorage
+    saveUserToStorage(currentUser);
+
     console.log('🔐 Login simulato (senza DB) per:', currentUser);
     return currentUser;
   } catch (error) {
@@ -40,12 +76,17 @@ export async function mockLogin(email: string): Promise<User | null> {
 
 // Funzione per ottenere l'utente corrente
 export function getCurrentUser(): User | null {
+  // Se non abbiamo un utente in memoria, prova a caricarlo da localStorage
+  if (!currentUser) {
+    currentUser = loadUserFromStorage();
+  }
   return currentUser;
 }
 
 // Funzione per logout
 export function mockLogout(): void {
   currentUser = null;
+  saveUserToStorage(null);
   console.log('🚪 Logout effettuato');
 }
 

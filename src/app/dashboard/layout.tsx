@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import React, { ReactNode } from "react";
 import { mdiForwardburger, mdiBackburger, mdiMenu } from "@mdi/js";
-import menuAside from "./_lib/menuAside";
+import { getMenuByRole } from "./_lib/menuAsideByRole";
 import menuNavBar from "./_lib/menuNavBar";
 import Icon from "../_components/Icon";
 import NavBar from "./_components/NavBar";
@@ -16,6 +16,7 @@ import FormField from "../_components/FormField";
 import { Field, Form, Formik } from "formik";
 import AuthWrapper from "@/components/AuthWrapper";
 import ClientOnlyWrapper from "@/components/ClientOnlyWrapper";
+import { useAuth } from "@/lib/auth";
 
 type Props = {
   children: ReactNode;
@@ -24,8 +25,12 @@ type Props = {
 function DashboardLayoutContent({ children }: Props) {
   const router = useRouter();
   const user = useUser();
+  const { user: authUser } = useAuth();
   const [isAsideMobileExpanded, setIsAsideMobileExpanded] = useState(false);
   const [isAsideLgActive, setIsAsideLgActive] = useState(false);
+
+  // Determina il menu basato sul ruolo dell'utente
+  const currentMenu = authUser?.role ? getMenuByRole(authUser.role) : getMenuByRole('user');
 
   useEffect(() => {
     if (user !== undefined && !user) {
@@ -103,7 +108,7 @@ function DashboardLayoutContent({ children }: Props) {
         <AsideMenu
           isAsideMobileExpanded={isAsideMobileExpanded}
           isAsideLgActive={isAsideLgActive}
-          menu={menuAside}
+          menu={currentMenu}
           onAsideLgClose={() => setIsAsideLgActive(false)}
           onRouteChange={handleRouteChange}
         />

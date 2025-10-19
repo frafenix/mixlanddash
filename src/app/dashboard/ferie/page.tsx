@@ -261,17 +261,19 @@ export default function FeriePage() {
             color="success"
             gradient
             className="animate-fade-in-up stagger-1"
+            isHoverable
+            onClick={() => console.log('Ferie clicked')}
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mr-3">
+                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                   <Icon path={mdiBeach} className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-white">
                     Ferie
                   </h3>
-                  <p className="text-sm text-green-200">
+                  <p className="text-sm text-white/80">
                     Giorni disponibili
                   </p>
                 </div>
@@ -279,26 +281,26 @@ export default function FeriePage() {
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-green-300">Disponibili:</span>
+                <span className="text-white/80">Disponibili:</span>
                 <span className="font-semibold text-white">
                   {leaveBalance.ferieAvailable} giorni
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-green-300">Utilizzate:</span>
+                <span className="text-white/80">Utilizzate:</span>
                 <span className="font-semibold text-white">
                   {leaveBalance.ferieUsed} giorni
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-green-300">Totali:</span>
+                <span className="text-white/80">Totali:</span>
                 <span className="font-semibold text-white">
                   {leaveBalance.ferieTotal} giorni
                 </span>
               </div>
               {leaveBalance.rolloverDays > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-green-300">Residui anno prec.:</span>
+                  <span className="text-white/80">Residui anno prec.:</span>
                   <span className="font-semibold text-white">
                     {leaveBalance.rolloverDays} giorni
                   </span>
@@ -312,17 +314,19 @@ export default function FeriePage() {
             color="info"
             gradient
             className="animate-fade-in-up stagger-2"
+            isHoverable
+            onClick={() => console.log('Permessi clicked')}
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                   <Icon path={mdiCalendarClock} className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-white">
                     Permessi
                   </h3>
-                  <p className="text-sm text-blue-200">
+                  <p className="text-sm text-white/80">
                     Ore disponibili
                   </p>
                 </div>
@@ -330,19 +334,19 @@ export default function FeriePage() {
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-blue-300">Disponibili:</span>
+                <span className="text-white/80">Disponibili:</span>
                 <span className="font-semibold text-white">
                   {leaveBalance.permessiAvailable} ore
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-blue-300">Utilizzate:</span>
+                <span className="text-white/80">Utilizzate:</span>
                 <span className="font-semibold text-white">
                   {leaveBalance.permessiUsed} ore
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-blue-300">Totali:</span>
+                <span className="text-white/80">Totali:</span>
                 <span className="font-semibold text-white">
                   {leaveBalance.permessiTotal} ore
                 </span>
@@ -352,20 +356,22 @@ export default function FeriePage() {
           
           {/* Card Riepilogo */}
           <ColoredCardBox
-            color="contrast"
+            color="warning"
             gradient
             className="animate-fade-in-up stagger-3"
+            isHoverable
+            onClick={() => console.log('Riepilogo clicked')}
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
+                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                   <Icon path={mdiCalendarClock} className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-white">
                     Riepilogo
                   </h3>
-                  <p className="text-sm text-purple-200">
+                  <p className="text-sm text-white/80">
                     Stato richieste
                   </p>
                 </div>
@@ -373,20 +379,20 @@ export default function FeriePage() {
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="opacity-80">In attesa:</span>
-                <span className="font-semibold">
+                <span className="text-white/80">In attesa:</span>
+                <span className="font-semibold text-white">
                   {leaveRequests.filter(r => r.status === "pending").length}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="opacity-80">Approvate:</span>
-                <span className="font-semibold">
+                <span className="text-white/80">Approvate:</span>
+                <span className="font-semibold text-white">
                   {leaveRequests.filter(r => r.status === "approved").length}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="opacity-80">Rifiutate:</span>
-                <span className="font-semibold">
+                <span className="text-white/80">Rifiutate:</span>
+                <span className="font-semibold text-white">
                   {leaveRequests.filter(r => r.status === "rejected").length}
                 </span>
               </div>
