@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import Button from "../../../_components/Button";
 import CardBox from "../../../_components/CardBox";
-import { Field, Form, Formik } from "formik";
-import FormFilePicker from "../../../_components/FormField/FilePicker";
+import { Field, Form, Formik, FormikHelpers } from "formik";
+import FormFilePicker, {
+  Props,
+} from "../../../_components/FormField/FilePicker";
 import { mdiClose, mdiCashMultiple, mdiCalendar, mdiCurrencyEur, mdiFileDocument, mdiMapMarker, mdiAccount, mdiFolder } from "@mdi/js";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -43,7 +45,10 @@ export default function ExpenseModal({ isActive, onClose, onSubmit }: ExpenseMod
     { value: "GBP", label: "GBP - Sterlina Britannica" },
   ];
 
-  const handleSubmit = async (values, { setSubmitting }) => {
+  const handleSubmit = async (
+    values: typeof initialValues,
+    { setSubmitting }: FormikHelpers<typeof initialValues>
+  ) => {
     if (values.attachments.length === 0) {
       alert("Compila tutti i campi obbligatori, inclusi gli allegati");
       setSubmitting(false);
@@ -54,7 +59,7 @@ export default function ExpenseModal({ isActive, onClose, onSubmit }: ExpenseMod
       const expenseData = {
         ...values,
         amount: parseFloat(values.amount),
-        attachments: values.attachments.map(file => file.name),
+        attachments: values.attachments.map((file: File) => file.name),
       };
       onSubmit(expenseData);
     } catch (error) {
@@ -65,7 +70,7 @@ export default function ExpenseModal({ isActive, onClose, onSubmit }: ExpenseMod
     }
   };
 
-  const handleClose = (resetForm) => {
+  const handleClose = (resetForm: () => void) => {
     resetForm();
     onClose();
   };
@@ -263,7 +268,9 @@ export default function ExpenseModal({ isActive, onClose, onSubmit }: ExpenseMod
                     label="Trascina i file qui o clicca per selezionarli"
                     help="PDF, JPG, PNG, GIF (max 5MB per file)"
                     icon={mdiFileDocument}
-                    onFileChange={(files) => setFieldValue("attachments", files)}
+                    onFileChange={(files: File[]) =>
+                      setFieldValue("attachments", files)
+                    }
                   />
                   {values.attachments.length > 0 && (
                     <div className="mt-3">

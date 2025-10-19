@@ -10,9 +10,9 @@ import { mdiAccount, mdiAccountSwitch, mdiLogout } from '@mdi/js';
 import Icon from '@/app/_components/Icon';
 
 const USER_OPTIONS = [
-  { value: TEST_USERS.ADMIN, label: 'Admin User', role: 'admin' },
-  { value: TEST_USERS.MANAGER, label: 'Manager User', role: 'manager' },
-  { value: TEST_USERS.USER, label: 'Regular User', role: 'user' },
+  { value: TEST_USERS.ADMIN.email, label: 'Admin User', role: 'admin' },
+  { value: TEST_USERS.MANAGER.email, label: 'Manager User', role: 'manager' },
+  { value: TEST_USERS.USER.email, label: 'Regular User', role: 'user' },
 ];
 
 export function UserSwitcher() {
