@@ -193,7 +193,6 @@ export default function FeriePage() {
         icon={mdiBeach}
         title="Richiesta Ferie e Permessi"
         main
-        className="mb-6"
       >
         <Button
           icon={mdiPlus}

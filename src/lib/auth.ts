@@ -3,6 +3,7 @@ import type { Role } from '@/db/schema';
 // Mock authentication system per testing
 export interface User {
   id: string;
+  name: string;
   email: string;
   role: Role;
   onboardingCompleted: boolean;
@@ -25,6 +26,7 @@ export async function mockLogin(email: string): Promise<User | null> {
 
     currentUser = {
       id: Math.random().toString(36).slice(2),
+      name: email.split('@')[0], // Simple name generation
       email,
       role,
       onboardingCompleted: true,
@@ -80,8 +82,26 @@ export function useAuth() {
 }
 
 // Funzioni di utilità per i test
-export const TEST_USERS = {
-  ADMIN: 'admin@test.com', // Questo sarà l'admin di default
-  MANAGER: 'manager@test.com',
-  USER: 'user@test.com',
-} as const;
+export const TEST_USERS: Record<string, User> = {
+  ADMIN: {
+    id: 'admin-user-id',
+    name: 'Admin User',
+    email: 'admin@test.com',
+    role: 'admin',
+    onboardingCompleted: true,
+  },
+  MANAGER: {
+    id: 'manager-user-id',
+    name: 'Manager User',
+    email: 'manager@test.com',
+    role: 'manager',
+    onboardingCompleted: true,
+  },
+  USER: {
+    id: 'regular-user-id',
+    name: 'Regular User',
+    email: 'user@test.com',
+    role: 'user',
+    onboardingCompleted: true,
+  },
+};

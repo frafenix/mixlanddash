@@ -21,7 +21,8 @@ import {
   mdiTrendingUp,
   mdiClockOutline,
   mdiFileDocument,
-  mdiChartPie
+  mdiChartPie,
+  mdiClose
 } from "@mdi/js";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -353,7 +354,6 @@ export default function SpesePage() {
         icon={mdiCashMultiple}
         title="Note Spese e Trasferte"
         main
-        className="mb-6"
       >
         <Button
           icon={mdiPlus}
