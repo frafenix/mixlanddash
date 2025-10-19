@@ -113,11 +113,31 @@ export const usersRelations = relations(users, ({ many }) => ({
   acceptedInvitations: many(invitations, { relationName: 'acceptedBy' }),
   attendances: many(attendances),
   holidays: many(holidays),
+  expenses: many(expenses),
   approvedAttendances: many(attendances, { relationName: 'approvedBy' }),
   rejectedAttendances: many(attendances, { relationName: 'rejectedBy' }),
   approvedHolidays: many(holidays, { relationName: 'approvedBy' }),
   rejectedHolidays: many(holidays, { relationName: 'rejectedBy' }),
 }));
+
+export const expenses = pgTable('expenses', {
+  id: serial('id').primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull().references(() => users.id, { onDelete: 'cascade' }),
+  companyId: integer('company_id').notNull().references(() => companies.id, { onDelete: 'cascade' }),
+  date: timestamp('date').notNull(),
+  type: text('type', { enum: ['travel', 'food', 'lodging', 'other'] }).notNull(),
+  amount: integer('amount').notNull(), // Importo in centesimi
+  description: text('description'),
+  receiptUrl: text('receipt_url'), // URL della ricevuta
+  status: text('status', { enum: ['pending', 'approved', 'rejected'] }).default('pending').notNull(),
+  approvedAt: timestamp('approved_at'),
+  approvedBy: varchar('approved_by', { length: 255 }).references(() => users.id),
+  rejectedAt: timestamp('rejected_at'),
+  rejectedBy: varchar('rejected_by', { length: 255 }).references(() => users.id),
+  rejectionReason: text('rejection_reason'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
 
 export const invitationsRelations = relations(invitations, ({ one }) => ({
   inviter: one(users, {
@@ -200,6 +220,27 @@ export const holidaysRelations = relations(holidays, ({ one }) => ({
   }),
   rejecter: one(users, {
     fields: [holidays.rejectedBy],
+    references: [users.id],
+    relationName: 'rejectedBy',
+  }),
+}));
+
+export const expensesRelations = relations(expenses, ({ one }) => ({
+  user: one(users, {
+    fields: [expenses.userId],
+    references: [users.id],
+  }),
+  company: one(companies, {
+    fields: [expenses.companyId],
+    references: [companies.id],
+  }),
+  approver: one(users, {
+    fields: [expenses.approvedBy],
+    references: [users.id],
+    relationName: 'approvedBy',
+  }),
+  rejecter: one(users, {
+    fields: [expenses.rejectedBy],
     references: [users.id],
     relationName: 'rejectedBy',
   }),

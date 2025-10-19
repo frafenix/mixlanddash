@@ -373,40 +373,114 @@ export default function TeamPage() {
     }
   };
 
+  // Funzione per ottenere le statistiche del team
+  const getTeamStats = () => {
+    const filteredMembers = getFilteredMembers();
+    return {
+      total: filteredMembers.length,
+      active: filteredMembers.filter(m => m.status === 'ACTIVE').length,
+      pending: filteredMembers.filter(m => m.status === 'PENDING').length,
+      managers: filteredMembers.filter(m => m.role === 'MANAGER').length,
+      users: filteredMembers.filter(m => m.role === 'USER').length,
+    };
+  };
+
+  const teamStats = getTeamStats();
+
   return (
     <SectionMain>
       {/* Header */}
       <SectionTitleLineWithButton
         icon={mdiAccountGroup}
-        title="Team Management"
+        title="Gestione Team"
         main
       >
-        <div className="flex space-x-2">
+        <div className="flex space-x-3">
           {userRole === "ADMIN" && (
             <Button
               icon={mdiDomain}
               color="info"
-              label="Create Team"
+              label="Crea Team"
               onClick={() => setIsCreateTeamModalActive(true)}
               small
+              className="rounded-lg"
             />
           )}
           {(userRole === "ADMIN" || userRole === "MANAGER") && (
             <Button
               icon={mdiPlus}
               color="success"
-              label="Invite Member"
+              label="Invita Membro"
               onClick={() => setIsInviteModalActive(true)}
               small
+              className="rounded-lg"
             />
           )}
         </div>
       </SectionTitleLineWithButton>
       
-      {/* Sottotitolo */}
-      <p className="text-gray-500 dark:text-gray-400 mb-6">
-        Gestisci i membri del tuo team, assegna ruoli e invia nuovi inviti.
-      </p>
+      {/* Team Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <CardBox className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+          <div className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2 bg-blue-100/20 rounded-lg">
+                <Icon path={mdiAccountGroup} size="24" className="text-blue-200" />
+              </div>
+              <span className="text-3xl font-bold">{teamStats.total}</span>
+            </div>
+            <h3 className="text-sm font-medium text-blue-100">Totale Membri</h3>
+          </div>
+        </CardBox>
+
+        <CardBox className="bg-gradient-to-br from-green-500 to-green-600 text-white">
+          <div className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2 bg-green-100/20 rounded-lg">
+                <Icon path={mdiCheckCircle} size="24" className="text-green-200" />
+              </div>
+              <span className="text-3xl font-bold">{teamStats.active}</span>
+            </div>
+            <h3 className="text-sm font-medium text-green-100">Attivi</h3>
+          </div>
+        </CardBox>
+
+        <CardBox className="bg-gradient-to-br from-yellow-500 to-yellow-600 text-white">
+          <div className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2 bg-yellow-100/20 rounded-lg">
+                <Icon path={mdiClockOutline} size="24" className="text-yellow-200" />
+              </div>
+              <span className="text-3xl font-bold">{teamStats.pending}</span>
+            </div>
+            <h3 className="text-sm font-medium text-yellow-100">In Attesa</h3>
+          </div>
+        </CardBox>
+
+        <CardBox className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+          <div className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2 bg-purple-100/20 rounded-lg">
+                <Icon path={mdiAccountSupervisor} size="24" className="text-purple-200" />
+              </div>
+              <span className="text-3xl font-bold">{teamStats.managers}</span>
+            </div>
+            <h3 className="text-sm font-medium text-purple-100">Manager</h3>
+          </div>
+        </CardBox>
+
+        <CardBox className="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white">
+          <div className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2 bg-indigo-100/20 rounded-lg">
+                <Icon path={mdiAccount} size="24" className="text-indigo-200" />
+              </div>
+              <span className="text-3xl font-bold">{teamStats.users}</span>
+            </div>
+            <h3 className="text-sm font-medium text-indigo-100">Utenti</h3>
+          </div>
+        </CardBox>
+      </div>
 
       {notification.type && notification.message && (
         <NotificationBar 
@@ -590,135 +664,121 @@ export default function TeamPage() {
         </form>
       </CardBoxModal>
 
-      {/* Tabella membri del team */}
-      <CardBox className="mb-6 overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr>
-                <th className="px-4 py-3 bg-gray-50 dark:bg-slate-800">Nome</th>
-                <th className="px-4 py-3 bg-gray-50 dark:bg-slate-800">Email</th>
-                <th className="px-4 py-3 bg-gray-50 dark:bg-slate-800">Ruolo</th>
-                <th className="px-4 py-3 bg-gray-50 dark:bg-slate-800">Stato</th>
-                {userRole === "ADMIN" && (
-                  <th className="px-4 py-3 bg-gray-50 dark:bg-slate-800">Team</th>
+      {/* Team Members Cards */}
+      <div className="space-y-4">
+        {isLoading ? (
+          <CardBox className="p-8 text-center">
+            <div className="flex items-center justify-center space-x-3">
+              <Icon path={mdiAccountGroup} size="24" className="text-blue-500 animate-pulse" />
+              <span className="text-lg text-gray-600 dark:text-gray-400">Caricamento membri del team...</span>
+            </div>
+          </CardBox>
+        ) : getFilteredMembers().length === 0 ? (
+          <CardBox className="p-8 text-center bg-gray-50 dark:bg-gray-800/50">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                <Icon path={mdiAccountGroup} size="32" className="text-gray-400 dark:text-gray-500" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Nessun membro nel team</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">Invita nuovi membri per iniziare a collaborare</p>
+                {(userRole === "ADMIN" || userRole === "MANAGER") && (
+                  <Button
+                    icon={mdiPlus}
+                    color="success"
+                    label="Invita il primo membro"
+                    onClick={() => setIsInviteModalActive(true)}
+                    className="rounded-lg"
+                  />
                 )}
-                <th className="px-4 py-3 bg-gray-50 dark:bg-slate-800">Azioni</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={userRole === "ADMIN" ? 6 : 5} className="px-4 py-8 text-center">
-                    Caricamento membri del team...
-                  </td>
-                </tr>
-              ) : getFilteredMembers().length === 0 ? (
-                <tr>
-                  <td colSpan={userRole === "ADMIN" ? 6 : 5} className="px-4 py-8 text-center">
-                    Nessun membro nel team. Invita nuovi membri per iniziare.
-                  </td>
-                </tr>
-              ) : (
-                getFilteredMembers().map((member) => (
-                  <tr key={member.id} className="border-b dark:border-slate-700">
-                    <td className="px-4 py-3">{member.name}</td>
-                    <td className="px-4 py-3">{member.email}</td>
-                    <td className="px-4 py-3">
+              </div>
+            </div>
+          </CardBox>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {getFilteredMembers().map((member) => (
+              <CardBox key={member.id} className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700">
+                <div className="p-5">
+                  {/* Member Header */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                        <span className="text-lg font-semibold text-white">
+                          {member.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        </span>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-800 dark:text-gray-100">{member.name}</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{member.email}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end space-y-2">
                       <PillTag
                         label={member.role}
                         color={getRoleIconAndColor(member.role).color}
                         icon={getRoleIconAndColor(member.role).icon}
                         small
                       />
-                    </td>
-                    <td className="px-4 py-3">
                       <PillTag
-                        label={member.status}
+                        label={member.status === 'ACTIVE' ? 'Attivo' : member.status === 'PENDING' ? 'In Attesa' : 'Sospeso'}
                         color={getStatusIconAndColor(member.status).color}
                         icon={getStatusIconAndColor(member.status).icon}
                         small
                       />
-                    </td>
-                    {userRole === "ADMIN" && (
-                      <td className="px-4 py-3">{member.teamName}</td>
-                    )}
-                    <td className="px-4 py-3">
-                      <div className="flex space-x-2">
-                        {userRole === "ADMIN" && (
-                          <>
-                            <div className="relative">
-                              <button 
-                                onClick={(e) => {
-                                  // Chiudi tutti gli altri menu aperti
-                                  document.querySelectorAll('.role-menu:not(.hidden)').forEach(menu => {
-                                    if (menu !== e.currentTarget.nextElementSibling) {
-                                      menu.classList.add('hidden');
-                                    }
-                                  });
-                                  // Apri/chiudi questo menu
-                                  e.currentTarget.nextElementSibling?.classList.toggle('hidden');
-                                }}
-                                className="p-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                                title="Cambia ruolo"
-                              >
-                                <Icon path={mdiPencil} size="18" />
-                              </button>
-                              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 hidden role-menu">
-                                <div className="py-1">
-                                  <button
-                                    onClick={() => handleRoleChange(member.id, "ADMIN")}
-                                    className={`block px-4 py-2 text-sm w-full text-left ${member.role === "ADMIN" ? "bg-blue-100 dark:bg-blue-900" : "hover:bg-gray-100 dark:hover:bg-gray-700"}`}
-                                  >
-                                    Admin
-                                  </button>
-                                  <button
-                                    onClick={() => handleRoleChange(member.id, "MANAGER")}
-                                    className={`block px-4 py-2 text-sm w-full text-left ${member.role === "MANAGER" ? "bg-blue-100 dark:bg-blue-900" : "hover:bg-gray-100 dark:hover:bg-gray-700"}`}
-                                  >
-                                    Manager
-                                  </button>
-                                  <button
-                                    onClick={() => handleRoleChange(member.id, "USER")}
-                                    className={`block px-4 py-2 text-sm w-full text-left ${member.role === "USER" ? "bg-blue-100 dark:bg-blue-900" : "hover:bg-gray-100 dark:hover:bg-gray-700"}`}
-                                  >
-                                    User
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                            <button 
-                              onClick={() => handleRemoveMember(member.id)}
-                              className="p-1 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                              title="Rimuovi utente"
-                            >
-                              <Icon path={mdiTrashCan} size="18" />
-                            </button>
-                          </>
-                        )}
-                        {userRole === "MANAGER" && member.role === "USER" && (
-                          <button 
-                            onClick={() => handleRoleChange(member.id, "USER")}
-                            className="p-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                            title="Modifica utente"
-                          >
-                            <Icon path={mdiPencil} size="18" />
-                          </button>
-                        )}
-                        <button 
-                          onClick={() => setSelectedMember(member)}
-                          className="p-1 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 transition-transform hover:scale-110"
-                          title="Visualizza dettagli"
-                        >
-                          <Icon path={mdiEye} size="18" />
-                        </button>
+                    </div>
+                  </div>
+
+                  {/* Team Info */}
+                  {userRole === "ADMIN" && (
+                    <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
+                      <div className="flex items-center space-x-2">
+                        <Icon path={mdiDomain} size="16" className="text-blue-600 dark:text-blue-400" />
+                        <span className="text-sm font-medium text-blue-700 dark:text-blue-300">{member.teamName}</span>
                       </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-      </CardBox>
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex space-x-2">
+                      {member.status === 'PENDING' && (
+                        <Button
+                          color="success"
+                          onClick={() => handleRoleChange(member.id, 'USER')}
+                          small
+                          label="Approva"
+                        />
+                      )}
+                      <Button
+                        color="info"
+                        onClick={() => alert(`Dettagli di ${member.name}`)}
+                        small
+                        label="Dettagli"
+                      />
+                    </div>
+                    <div className="flex space-x-2">
+                      {userRole === "ADMIN" && (
+                        <Button
+                          color="warning"
+                          onClick={() => handleRoleChange(member.id, member.role === 'USER' ? 'MANAGER' : 'USER')}
+                          small
+                          label={member.role === 'USER' ? 'Promuovi' : 'Degrada'}
+                        />
+                      )}
+                      <Button
+                        color="danger"
+                        onClick={() => handleRemoveMember(member.id)}
+                        small
+                        label="Rimuovi"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CardBox>
+            ))}
+          </div>
+        )}
+      </div>
 
 
     </SectionMain>

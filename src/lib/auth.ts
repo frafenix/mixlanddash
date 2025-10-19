@@ -32,6 +32,14 @@ export async function mockLogin(email: string): Promise<User | null> {
       onboardingCompleted: true,
     };
 
+    // Persist mock user for client components and server override
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.setItem('mock_user', JSON.stringify(currentUser));
+        document.cookie = `mock_role=${role}; path=/`;
+      } catch {}
+    }
+
     console.log('🔐 Login simulato (senza DB) per:', currentUser);
     return currentUser;
   } catch (error) {
@@ -42,12 +50,26 @@ export async function mockLogin(email: string): Promise<User | null> {
 
 // Funzione per ottenere l'utente corrente
 export function getCurrentUser(): User | null {
+  if (typeof window !== 'undefined' && !currentUser) {
+    try {
+      const raw = window.localStorage.getItem('mock_user');
+      if (raw) {
+        currentUser = JSON.parse(raw) as User;
+      }
+    } catch {}
+  }
   return currentUser;
 }
 
 // Funzione per logout
 export function mockLogout(): void {
   currentUser = null;
+  if (typeof window !== 'undefined') {
+    try {
+      window.localStorage.removeItem('mock_user');
+      document.cookie = 'mock_role=; Max-Age=0; path=/';
+    } catch {}
+  }
   console.log('🚪 Logout effettuato');
 }
 

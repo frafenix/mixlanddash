@@ -28,10 +28,11 @@ export default function CardBox({
   onClick,
 }: Props) {
   const componentClass = [
+    "bg-white",
     flex,
     className,
     rounded,
-    isModal ? "bg-white dark:bg-slate-900" : "dark:bg-slate-900/70",
+    isModal ? "dark:bg-slate-900" : "dark:bg-slate-900/70",
   ];
 
   if (isHoverable) {

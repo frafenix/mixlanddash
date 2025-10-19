@@ -11,7 +11,7 @@ export default function FooterBar({ children }: Props) {
 
   return (
     <footer className={`py-2 px-6 ${containerMaxW}`}>
-
+      {children}
     </footer>
   );
 }

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import React, { ReactNode } from "react";
 import { mdiForwardburger, mdiBackburger, mdiMenu } from "@mdi/js";
-import menuAside from "./_lib/menuAside";
+import getRoleBasedMenu from "./_lib/menuAsideRole";
 import menuNavBar from "./_lib/menuNavBar";
 import Icon from "../_components/Icon";
 import NavBar from "./_components/NavBar";
@@ -16,6 +16,7 @@ import FormField from "../_components/FormField";
 import { Field, Form, Formik } from "formik";
 import AuthWrapper from "@/components/AuthWrapper";
 import ClientOnlyWrapper from "@/components/ClientOnlyWrapper";
+import { UserSwitcher } from "@/components/UserSwitcher";
 
 type Props = {
   children: ReactNode;
@@ -26,6 +27,18 @@ function DashboardLayoutContent({ children }: Props) {
   const user = useUser();
   const [isAsideMobileExpanded, setIsAsideMobileExpanded] = useState(false);
   const [isAsideLgActive, setIsAsideLgActive] = useState(false);
+  const [userRole, setUserRole] = useState<'admin' | 'manager' | 'user'>('user');
+
+  useEffect(() => {
+    if (user) {
+      // Get user role from metadata
+      if ('metadata' in user && user.metadata) {
+        const metadata = user.metadata as { role?: string };
+        const role = metadata?.role || 'user';
+        setUserRole(role as 'admin' | 'manager' | 'user');
+      }
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user !== undefined && !user) {
@@ -103,14 +116,13 @@ function DashboardLayoutContent({ children }: Props) {
         <AsideMenu
           isAsideMobileExpanded={isAsideMobileExpanded}
           isAsideLgActive={isAsideLgActive}
-          menu={menuAside}
+          menu={getRoleBasedMenu(userRole)}
           onAsideLgClose={() => setIsAsideLgActive(false)}
           onRouteChange={handleRouteChange}
         />
         {children}
         <FooterBar>
-          Get more with{` `}
-
+          <UserSwitcher />
         </FooterBar>
       </div>
     </div>

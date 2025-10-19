@@ -6,7 +6,8 @@ import SectionMain from "../../_components/Section/Main";
 import CardBox from "../../_components/CardBox";
 import Button from "../../_components/Button";
 import NotificationBar from "../../_components/NotificationBar";
-import { mdiCalendarMonth, mdiCheckCircle, mdiAlertCircle, mdiInformation, mdiOfficeBuilding, mdiHome, mdiClockOutline, mdiFlash, mdiContentSave } from "@mdi/js";
+import Icon from "@mdi/react";
+import { mdiCalendarMonth, mdiCheckCircle, mdiAlertCircle, mdiInformation, mdiOfficeBuilding, mdiHome, mdiClockOutline, mdiFlash, mdiContentSave, mdiChevronLeft, mdiChevronRight, mdiAccountGroup, mdiFileDocument, mdiFilter, mdiRefresh, mdiAccountMultiple } from "@mdi/js";
 // Simuliamo il contesto utente poiché non esiste il componente UserContext
 const useUserContext = () => ({ user: { role: "ADMIN", name: "Admin User" } });
 import { format, isWeekend } from "date-fns";
@@ -234,9 +235,10 @@ export default function PresenzePage() {
   if (!attendance) {
     return (
       <SectionMain>
-        <CardBox>
-          <div className="flex justify-center items-center h-64">
-            <p>Caricamento...</p>
+        <CardBox className="p-8 text-center">
+          <div className="flex items-center justify-center space-x-3">
+            <Icon path={mdiClockOutline} size="24" className="text-blue-500 animate-pulse" />
+            <span className="text-lg text-gray-600 dark:text-gray-400">Caricamento presenze...</span>
           </div>
         </CardBox>
       </SectionMain>
@@ -276,6 +278,20 @@ export default function PresenzePage() {
             </span>
           </div>
           <div className="flex space-x-2">
+            <Button
+              color="contrast"
+              icon={mdiFileDocument}
+              small
+              label="Le Mie Presenze"
+              onClick={() => router.push("/dashboard/le-mie-presenze")}
+            />
+            <Button
+              color="info"
+              icon={mdiAccountMultiple}
+              small
+              label="Vista Team"
+              onClick={() => router.push("/dashboard/presenze/team")}
+            />
             <Button
               color="info"
               icon={mdiCalendarMonth}

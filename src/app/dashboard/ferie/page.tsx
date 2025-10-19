@@ -19,7 +19,9 @@ import {
   mdiCancel,
   mdiEye,
   mdiDownload,
-  mdiFilter
+  mdiFilter,
+  mdiAccountMultiple,
+  mdiFileDocument
 } from "@mdi/js";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -194,6 +196,20 @@ export default function FeriePage() {
         title="Richiesta Ferie e Permessi"
         main
       >
+        <Button
+          icon={mdiAccountMultiple}
+          label="Team"
+          color="info"
+          onClick={() => router.push("/dashboard/ferie/team")}
+          className="mt-4 sm:mr-4"
+        />
+        <Button
+          icon={mdiFileDocument}
+          label="Le Mie Ferie"
+          color="contrast"
+          onClick={() => router.push("/dashboard/le-mie-ferie")}
+          className="mt-4 sm:mr-4"
+        />
         <Button
           icon={mdiPlus}
           label="Nuova richiesta"

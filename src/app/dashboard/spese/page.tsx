@@ -22,7 +22,8 @@ import {
   mdiClockOutline,
   mdiFileDocument,
   mdiChartPie,
-  mdiClose
+  mdiClose,
+  mdiAccountMultiple
 } from "@mdi/js";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -355,6 +356,20 @@ export default function SpesePage() {
         title="Note Spese e Trasferte"
         main
       >
+        <Button
+          icon={mdiFileDocument}
+          label="Le Mie Spese"
+          color="contrast"
+          onClick={() => router.push("/dashboard/le-mie-spese")}
+          className="mt-4 sm:mr-4"
+        />
+        <Button
+          icon={mdiAccountMultiple}
+          label="Team"
+          color="info"
+          onClick={() => router.push("/dashboard/spese/team")}
+          className="mt-4 sm:mr-4"
+        />
         <Button
           icon={mdiPlus}
           label="Nuova nota spese"
