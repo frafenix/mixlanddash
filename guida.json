@@ -1,0 +1,308 @@
+{
+  "project_name": "Web Business Suite – Preventivi e Fatture Smart",
+  "description": "Piattaforma web responsive con PWA per professionisti e PMI, gestione clienti, preventivi, fatture con supporto offline smart e compliance normativa italiana.",
+  "technology_stack": {
+    "frontend": {
+      "framework": "React / Next.js (PWA-enabled)",
+      "ui_template": {
+        "name": "TailAdmin Free Tailwind Dashboard Template",
+        "source": "https://github.com/TailAdmin/tailadmin-free-tailwind-dashboard-template",
+        "notes": "Importare come base principale del monorepo e mantenere workspace unificato per evitare split tra frontend/backend       }
+    },
+    "backend": {
+      "database": {
+        "provider": "Neon",
+        "type": "Managed PostgreSQL cloud",
+        "description": "Neon DB serverless, scalabile e estensibile. Collegamento tramite Drizzle ORM. Deve essere predisposta la configurazione per ambiente produzione.",
+        "integration_notes": "Utilizzare Neon CLI per la gestione di database, setup rapido e produttivo, con richiesta variabili ambiente NEON_DB_URL e dati di autenticazione al momento dello sviluppo."
+      },
+      "orm": {
+        "provider": "Drizzle ORM",
+        "version": "0.44.1",
+        "integration_notes": "Versioni compatibili consigliate: drizzle-orm@0.44.1, drizzle-zod@0.8.3, zod@4.1.8. Bloccare versioni in package.json e, se serve, via 'resolutions'."
+      },
+      "auth": {
+        "provider": "Stack Auth",
+        "description": "Gestione utenti centralizzata. Per deployment semplice e rapido usare esclusivamente Stack Auth CLI.",
+        "integration_notes": "Quando interviene qualsiasi agente AI, assicurarsi che venga richiesto il settaggio delle variabili ambiente STACK_AUTH_API_KEY e STACK_AUTH_SECRET, usando CLI per setup, provisioning e test."
+      },
+      "storage": "Supabase Storage o AWS S3 per documenti; config in variabili ambiente per endpoint, key e bucket name."
+    },
+    "pwa_features": [
+      "Offline-first con IndexedDB e sincronizzazione automatica",
+      "Web Share API per invio documenti",
+      "Installabile come app standalone (manifest PWA conforme a standard produzione)"
+    ]
+  },
+  "production_guidelines": {
+    "deploy_focus": "Ogni modulo, API e componente UI devono essere pensati *nativamente* per produzione: zero dipendenze inutili, logging e error handling esplicito, readiness a deploy su Vercel, AWS, Cloud Run, Neon.",
+    "environment_setup": "Al primo avvio o deploy, obbligare inserimento variabili di ambiente per Stack Auth CLI (API_KEY/SECRET) e Neon DB CLI (NEON_DB_URL/token). Documentare variabili in README e .env.example.",
+    "cli_tools": "Usare soltanto le versioni CLI di Stack Auth e Neon per provisioning, rollback, reset, e test. Integrare script npm per automation."
+  },
+  "modules": [
+    {
+      "id": "F1",
+      "name": "Gestione Anagrafiche",
+      "api": "/contacts",
+      "offline_support": true,
+      "ui_integration": "Componenti TailAdmin",
+      "development_stages": [
+        "Configurazione schema DB Neon via Drizzle ORM + CLI",
+        "Implementazione CRUD backend NestJS con Drizzle",
+        "Sviluppo UI",
+        "Sincronizzazione offline IndexedDB",
+        "Testing su build di staging e produzione, validazione ambiente"
+      ]
+    },
+    {
+      "id": "F2",
+      "name": "Listino Prodotti e Servizi",
+      "api": "/items",
+      "offline_support": true,
+      "ui_integration": "TailAdmin grid e modali",
+      "development_stages": [
+        "Schema DB e API CRUD Neon con Drizzle",
+        "UI gestione listino",
+        "Versioning e caching offline",
+        "Test e validazione produzione"
+      ]
+    },
+    {
+      "id": "F3",
+      "name": "Creazione Preventivo",
+      "api": "/quotes",
+      "offline_support": true,
+      "ui_integration": "Stepper wizard TailAdmin",
+      "development_stages": [
+        "Schema preventivi backend Neon/Drizzle",
+        "Stepper UI",
+        "Firma digitale e autosave offline",
+        "Preview PDF",
+        "Test produzione"
+      ]
+    },
+    {
+      "id": "F4",
+      "name": "Generazione e Invio Documento PDF",
+      "api": "/documents/pdf",
+      "ui_integration": "Viewer PDF TailAdmin",
+      "development_stages": [
+        "Generazione PDF backend con variabili ambiente per storage",
+        "UI preview e condivisione",
+        "Test multi-device"
+      ]
+    },
+    {
+      "id": "F5",
+      "name": "Gestione Fatture e Conversione",
+      "api": "/invoices",
+      "offline_support": false,
+      "ui_integration": "Tabelle TailAdmin",
+      "documentation_links": {
+        "guida_fattura_agenzia_entrate": "https://www.idealista.it/news/finanza/fisco/2025/08/21/262626-guida-dell-agenzia-delle-entrate-sulla-fattura-elettronica-2025",
+        "specifiche_tecniche": "https://indicom.eu/fatturazione-elettronica-it/fatturazione-elettronica-le-nuove-specifiche-tecniche-2025/",
+        "schema_xml_sdi": "https://www.agenziaentrate.gov.it/portale/web/guest/guida-fatture-e-corrispettivi"
+      },
+      "development_stages": [
+        "API Neon/Drizzle per fatture (DB via CLI)",
+        "UI pagamenti e notifiche",
+        "Generazione XML SDI",
+        "Test produzione"
+      ]
+    },
+    {
+      "id": "F6",
+      "name": "Dashboard & Archivio Documenti",
+      "api": "/documents",
+      "ui_integration": "TailAdmin cards e grafici",
+      "development_stages": [
+        "API statistiche Neon/Drizzle",
+        "Dashboard UI",
+        "Test produzione"
+      ]
+    },
+    {
+      "id": "F7",
+      "name": "Configurazione Fiscale e Commercialista",
+      "api": "/config",
+      "ui_integration": "TailAdmin tabs",
+      "development_stages": [
+        "API config Neon/Drizzle",
+        "UI configurazioni",
+        "Test produzione"
+      ]
+    },
+    {
+      "id": "F8",
+      "name": "Modalità Cantiere Smart (PWA Offline)",
+      "api": "/sync",
+      "ui_integration": "UI mobile TailAdmin",
+      "development_stages": [
+        "Backend sync/offline Neon/Drizzle",
+        "UI mobile minimal",
+        "Test produzione"
+      ]
+    }
+  ],
+  {
+  "project_name": "Web Business Suite – Preventivi e Fatture Smart",
+  "comprehensive_documentation": {
+    "frontend": {
+      "react": {
+        "official_docs": "https://react.dev",
+        "react_19_release": "https://react.dev/blog/2024/12/05/react-19",
+        "react_19_features": "https://www.geeksforgeeks.org/reactjs/react-19-new-features-and-updates/",
+        "description": "Libreria JavaScript per costruire interfacce utente, versione 19 con Server Components, Actions, nuovi hooks"
+      },
+      "nextjs": {
+        "official_docs": "https://nextjs.org/docs",
+        "nextjs_15_release": "https://nextjs.org/blog/next-15",
+        "nextjs_15_5_release": "https://nextjs.org/blog/next-15-5",
+        "tutorial_2025": "https://dev.to/hamidrazadev/whats-new-in-nextjs-15-2025-release-guide-mo6",
+        "description": "Framework React per produzione con Server Components, Turbopack, App Router"
+      },
+      "tailwindcss": {
+        "official_docs": "https://tailwindcss.com/docs",
+        "installation": "https://tailwindcss.com/docs",
+        "utility_classes": "https://tailwindcss.com/docs/utility-first",
+        "functions_directives": "https://tailwindcss.com/docs/functions-and-directives",
+        "complete_guide": "https://dev.to/munisekharudavalapati/tailwind-css-complete-documentation-3goc",
+        "description": "Framework CSS utility-first per design responsive e rapido"
+      },
+      "tailadmin_template": {
+        "github_repo": "https://github.com/TailAdmin/tailadmin-free-tailwind-dashboard-template",
+        "description": "Template dashboard gratuito Tailwind utilizzato come base UI del progetto"
+      }
+    },
+    "backend": {
+      "nestjs": {
+        "official_docs": "https://docs.nestjs.com",
+        "first_steps": "https://docs.nestjs.com/first-steps",
+        "best_orm_2025": "https://dev.to/sasithwarnakafonseka/best-orm-for-nestjs-in-2025-drizzle-orm-vs-typeorm-vs-prisma-229c",
+        "roadmap_2025": "https://dev.to/tak089/nestjs-roadmap-for-2025-5jj",
+        "nestjs_2025_guide": "https://leapcell.io/blog/nestjs-2025-backend-developers-worth-it",
+        "description": "Framework Node.js progressivo per applicazioni server-side scalabili"
+      },
+      "nodejs": {
+        "official_docs": "https://nodejs.org/en/docs/",
+        "nodejs_v25": "https://nodejs.org/en/blog/release/v25.0.0",
+        "how_nodejs_works_2025": "http://nodesource.com/blog/how-nodejs-works/",
+        "handbook_2025": "https://flaviocopes.com/the-nodejs-handbook-2025-edition/",
+        "tutorial_2025": "https://dev.to/pythontutorial/nodejs-tutorial-2025-learn-backend-development-with-javascript-24l7",
+        "description": "Runtime JavaScript asincrono event-driven per backend scalabili"
+      },
+      "drizzle_orm": {
+        "official_docs": "https://orm.drizzle.team/docs/overview",
+        "getting_started_neon": "https://orm.drizzle.team/docs/get-started/neon-new",
+        "queries": "https://orm.drizzle.team/docs/rqb",
+        "select": "https://orm.drizzle.team/docs/select",
+        "zod_integration": "https://orm.drizzle.team/docs/zod",
+        "benchmarks": "https://orm.drizzle.team/benchmarks",
+        "crash_course_neon": "https://dev.to/devjubr/drizzle-orm-in-neon-db-the-ultimate-crash-course-for-modern-web-development-2bo4",
+        "vs_prisma": "https://www.bytebase.com/blog/drizzle-vs-prisma/",
+        "comparison_2025": "https://supastarter.dev/blog/prisma-vs-drizzle",
+        "description": "ORM TypeScript-first leggero, SQL-like e serverless-ready"
+      },
+      "neon_db": {
+        "official_docs": "https://neon.com/docs/introduction",
+        "getting_started": "https://neon.com/docs/get-started/signing-up",
+        "neon_cli": "https://neon.com/docs/reference/neon-cli",
+        "cli_operations": "https://neon.com/docs/reference/cli-operations",
+        "github_cli": "https://github.com/neondatabase/neonctl",
+        "cloudflare_integration": "https://developers.cloudflare.com/workers/databases/third-party-integrations/neon/",
+        "postgresql_tutorial": "https://neon.com/postgresql/tutorial",
+        "description": "PostgreSQL serverless gestito con branching, autoscaling e compute separato"
+      },
+      "stack_auth": {
+        "official_docs": "https://docs.stack-auth.com",
+        "overview": "https://docs.stack-auth.com/docs/next/overview",
+        "github_repo": "https://github.com/stack-auth/stack-auth",
+        "cli_authentication": "https://docs.stack-auth.com/api/server/cli-authentication/auth/cli",
+        "description": "Piattaforma auth open-source con JWT, social login, gestione utenti e team"
+      },
+      "postgresql": {
+        "official_docs": "https://www.postgresql.org/docs/",
+        "latest_docs": "https://www.postgresql.org",
+        "postgresql_16_pdf": "https://www.postgresql.org/files/documentation/pdf/16/postgresql-16-A4.pdf",
+        "w3schools_tutorial": "https://www.w3schools.com/postgresql/",
+        "description": "Sistema di database relazionale avanzato open-source"
+      }
+    },
+    "validation_typing": {
+      "zod": {
+        "official_docs": "https://zod.dev",
+        "github_repo": "https://github.com/colinhacks/zod",
+        "complete_guide": "https://betterstack.com/community/guides/scaling-nodejs/zod-explained/",
+        "schema_validation_guide": "https://tecktol.com/zod-schema-validation-the-complete-guide/",
+        "odocs": "https://odocs-zod.vercel.app",
+        "description": "Libreria TypeScript-first per validazione schema e runtime type checking"
+      },
+      "typescript": {
+        "official_docs": "https://www.typescriptlang.org/docs/",
+        "handbook": "https://www.typescriptlang.org/docs/",
+        "typescript_5_1": "https://devdocs.io/typescript~5.1/",
+        "w3schools_tutorial": "https://www.w3schools.com/typescript/",
+        "description": "Superset JavaScript tipizzato staticamente per sviluppo scalabile"
+      }
+    },
+    "pwa_offline": {
+      "progressive_web_apps": {
+        "mdn_docs": "https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps",
+        "microsoft_edge_docs": "https://learn.microsoft.com/en-us/microsoft-edge/progressive-web-apps/landing/",
+        "complete_guide_2025": "https://www.bitcot.com/progressive-web-apps-pwa-the-complete-guide/",
+        "ultimate_guide_2025": "https://flexxited.com/blog/the-ultimate-guide-to-progressive-web-apps-pwas-in-2025-benefits-and-best",
+        "build_pwa_guide": "https://trio.dev/build-a-progressive-web-app/",
+        "pwa_manifest": "https://web.dev/learn/pwa/web-app-manifest",
+        "description": "Standard per app web installabili con esperienza nativa e supporto offline"
+      },
+      "indexeddb": {
+        "mdn_docs": "https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API",
+        "using_indexeddb": "https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB",
+        "webplatform_docs": "https://webplatform.github.io/docs/apis/indexeddb/",
+        "beginner_guide": "https://apidog.com/blog/indexeddb-api/",
+        "w3c_spec": "https://www.w3.org/TR/IndexedDB/",
+        "description": "API client-side per storage di grandi quantità di dati strutturati con indici"
+      }
+    },
+    "storage": {
+      "supabase_storage": {
+        "official_docs": "https://supabase.com/docs/guides/storage",
+        "features": "https://supabase.com/features/file-storage",
+        "javascript_api": "https://supabase.com/docs/reference/javascript/storage-from-list",
+        "github_repo": "https://github.com/supabase/storage",
+        "file_management_guide": "https://chat2db.ai/resources/blog/supabase-storage-file-management-guide",
+        "upload_guide": "https://docs.weweb.io/workflows/actions/supabase/storage-upload-file.html",
+        "description": "Storage oggetti S3-compatibile con CDN globale, ottimizzazione immagini e RLS"
+      }
+    },
+    "compliance_italia": {
+      "fatturazione_elettronica": {
+        "guida_agenzia_entrate_2025": "https://www.idealista.it/news/finanza/fisco/2025/08/21/262626-guida-dell-agenzia-delle-entrate-sulla-fattura-elettronica-2025",
+        "specifiche_tecniche_2025": "https://indicom.eu/fatturazione-elettronica-it/fatturazione-elettronica-le-nuove-specifiche-tecniche-2025/",
+        "schema_xml_sdi": "https://www.agenziaentrate.gov.it/portale/web/guest/guida-fatture-e-corrispettivi",
+        "description": "Documentazione normativa italiana per fatturazione elettronica e integrazione SDI"
+      }
+    },
+    "api_standards": {
+      "openapi": {
+        "official_spec": "https://swagger.io/specification/",
+        "description": "Specifica standard per definire API REST con documentazione autogenerata"
+      }
+    }
+  }
+}
+,
+  "development_process": {
+    "approach": "Incrementale con validazione utente, ottimizzato per deployment immediato.",
+    "detailed_steps": [
+      "Importare template TailAdmin come root repo, workspace unico per tutti gli agenti AI coding, evitando progetti multipli.",
+      "Configurare schema DB Neon con Drizzle ORM e Neon CLI, chiedendo all’utente le variabili ambiente.",
+      "Sviluppare API e logica backend, UI e moduli solo nel workspace principale.",
+      "Bloccare versioni compatibili Zod/Drizzle in package.json e risoluzioni.",
+      "Testing funzionale, validazione staging/produzione",
+      "Demo e validazione modulo",
+      "README sempre aggiornato: variabili ambiente obbligatorie, tutti gli script CLI, note per deploy su Vercel/AWS/Neon.",
+      "Ogni agente AI coding deve rispettare workflow con step produzione e richiedere l’inserimento delle variabili ambiente agli sviluppatori."
+    ]
+  }
+}
