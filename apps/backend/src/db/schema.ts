@@ -82,9 +82,8 @@ export const contacts = pgTable('contacts', {
   // Referente (JSON)
   referente: text('referente'), // JSON string: {nome, ruolo, telefono, email}
   
-  // Note e stato
+  // Note
   note: text('note'),
-  status: text('status').default('attivo'), // attivo, in_attesa, blacklist
   
   // Timestamps
   createdAt: timestamp('created_at').defaultNow().notNull(),

@@ -51,9 +51,8 @@ const AnagraficaSchema = z.object({
   // Referente (JSON)
   referente: z.string().optional(), // JSON string
   
-  // Note e stato
+  // Note
   note: z.string().optional(),
-  status: z.enum(['attivo', 'in_attesa', 'blacklist']).default('attivo'),
 });
 
 @Injectable()

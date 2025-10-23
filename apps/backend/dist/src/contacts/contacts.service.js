@@ -84,7 +84,6 @@ const AnagraficaSchema = z.object({
     condizioniPagamento: z.string().optional(),
     referente: z.string().optional(),
     note: z.string().optional(),
-    status: z.enum(['attivo', 'in_attesa', 'blacklist']).default('attivo'),
 });
 let ContactsService = class ContactsService {
     db;

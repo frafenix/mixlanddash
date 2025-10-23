@@ -38,7 +38,6 @@ export declare class ContactsController {
         condizioniPagamento: string | null;
         referente: string | null;
         note: string | null;
-        status: string | null;
     }[]>;
     findAll(req: any): Promise<{
         isFornitore: boolean;
@@ -74,7 +73,6 @@ export declare class ContactsController {
         condizioniPagamento: string | null;
         referente: string | null;
         note: string | null;
-        status: string | null;
         createdAt: Date;
         updatedAt: Date;
     }[]>;
@@ -112,7 +110,6 @@ export declare class ContactsController {
         condizioniPagamento: string | null;
         referente: string | null;
         note: string | null;
-        status: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -150,7 +147,6 @@ export declare class ContactsController {
         condizioniPagamento: string | null;
         referente: string | null;
         note: string | null;
-        status: string | null;
         createdAt: Date;
         updatedAt: Date;
     }[]>;
@@ -190,6 +186,5 @@ export declare class ContactsController {
         condizioniPagamento: string | null;
         referente: string | null;
         note: string | null;
-        status: string | null;
     }[]>;
 }

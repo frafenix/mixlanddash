@@ -61,7 +61,6 @@ exports.contacts = (0, pg_core_1.pgTable)('contacts', {
     condizioniPagamento: (0, pg_core_1.text)('condizioni_pagamento'),
     referente: (0, pg_core_1.text)('referente'),
     note: (0, pg_core_1.text)('note'),
-    status: (0, pg_core_1.text)('status').default('attivo'),
     createdAt: (0, pg_core_1.timestamp)('created_at').defaultNow().notNull(),
     updatedAt: (0, pg_core_1.timestamp)('updated_at').defaultNow().notNull(),
 }, (table) => ({

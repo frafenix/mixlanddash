@@ -38,11 +38,6 @@ declare const AnagraficaSchema: z.ZodObject<{
     condizioniPagamento: z.ZodOptional<z.ZodString>;
     referente: z.ZodOptional<z.ZodString>;
     note: z.ZodOptional<z.ZodString>;
-    status: z.ZodDefault<z.ZodEnum<{
-        attivo: "attivo";
-        in_attesa: "in_attesa";
-        blacklist: "blacklist";
-    }>>;
 }, z.core.$strip>;
 export declare class ContactsService {
     private db;
@@ -83,7 +78,6 @@ export declare class ContactsService {
         condizioniPagamento: string | null;
         referente: string | null;
         note: string | null;
-        status: string | null;
     }[]>;
     findAll(user: any): Promise<{
         isFornitore: boolean;
@@ -119,7 +113,6 @@ export declare class ContactsService {
         condizioniPagamento: string | null;
         referente: string | null;
         note: string | null;
-        status: string | null;
         createdAt: Date;
         updatedAt: Date;
     }[]>;
@@ -157,7 +150,6 @@ export declare class ContactsService {
         condizioniPagamento: string | null;
         referente: string | null;
         note: string | null;
-        status: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -195,7 +187,6 @@ export declare class ContactsService {
         condizioniPagamento: string | null;
         referente: string | null;
         note: string | null;
-        status: string | null;
         createdAt: Date;
         updatedAt: Date;
     }[]>;
@@ -235,7 +226,6 @@ export declare class ContactsService {
         condizioniPagamento: string | null;
         referente: string | null;
         note: string | null;
-        status: string | null;
     }[]>;
 }
 export {};

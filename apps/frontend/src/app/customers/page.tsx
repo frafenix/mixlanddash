@@ -37,7 +37,6 @@ const sampleCustomers: Anagrafica[] = [
     agenzia: "Roma Centro",
     swift: "BCITITMM",
     note: "Cliente importante",
-    attivo: true,
     cliente: true,
     fornitore: false,
     vettore: false,
@@ -68,7 +67,6 @@ const sampleCustomers: Anagrafica[] = [
     agenzia: "",
     swift: "",
     note: "Cliente privato",
-    attivo: true,
     cliente: true,
     fornitore: true,
     vettore: false,
@@ -100,7 +98,6 @@ const emptyCustomer: Partial<Anagrafica> = {
   agenzia: "",
   swift: "",
   note: "",
-  attivo: true,
   cliente: false,
   fornitore: false,
   vettore: false,
@@ -377,53 +374,46 @@ export default function CustomersPage() {
         </div>
       </div>
 
-      <div>
-        <Label>Tipologia Cliente</Label>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-2">
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="attivo"
-              checked={formData.attivo || false}
-              onChange={(checked) => handleCheckboxChange("attivo", checked)}
-              label="Attivo"
-            />
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="cliente"
-              checked={formData.cliente || false}
-              onChange={(checked) => handleCheckboxChange("cliente", checked)}
-              label="Cliente"
-            />
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="fornitore"
-              checked={formData.fornitore || false}
-              onChange={(checked) => handleCheckboxChange("fornitore", checked)}
-              label="Fornitore"
-            />
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="vettore"
-              checked={formData.vettore || false}
-              onChange={(checked) => handleCheckboxChange("vettore", checked)}
-              label="Vettore"
-            />
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="agente"
-              checked={formData.agente || false}
-              onChange={(checked) => handleCheckboxChange("agente", checked)}
-              label="Agente"
-            />
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="tipologiaCliente">Tipologia Cliente</Label>
+          <Select
+            options={[
+              { value: "cliente", label: "Cliente" },
+              { value: "fornitore", label: "Fornitore" },
+              { value: "cliente_fornitore", label: "Cliente e Fornitore" }
+            ]}
+            placeholder="Seleziona tipologia"
+            defaultValue={
+              formData.cliente && formData.fornitore ? "cliente_fornitore" :
+              formData.cliente ? "cliente" :
+              formData.fornitore ? "fornitore" :
+              ""
+            }
+            onChange={(value) => {
+              const updates = {
+                cliente: false,
+                fornitore: false,
+                vettore: false,
+                agente: false
+              };
+              
+              switch (value) {
+                case "cliente":
+                  updates.cliente = true;
+                  break;
+                case "fornitore":
+                  updates.fornitore = true;
+                  break;
+                case "cliente_fornitore":
+                  updates.cliente = true;
+                  updates.fornitore = true;
+                  break;
+              }
+              
+              setFormData(prev => ({ ...prev, ...updates }));
+            }}
+          />
         </div>
       </div>
     </div>
